@@ -87,8 +87,8 @@ fn test_cloudevents_json_schemas_and_fixtures() -> Result<(), Box<dyn std::error
     }
 
     assert!(
-        verified_count >= 16,
-        "预期至少校验 16 个 Fixture，实际校验了: {verified_count}"
+        verified_count >= 18,
+        "预期至少校验 18 个 Fixture，实际校验了: {verified_count}"
     );
 
     Ok(())

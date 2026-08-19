@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ecommerce-core.local/events/stock-released.v1.schema.json",
+  "title": "StockReleasedEvent",
+  "description": "库存预留释放事实事件 (CNCF CloudEvents 1.0 规范)",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "event-envelope.v1.schema.json"
+    }
+  ],
+  "properties": {
+    "type": {
+      "type": "string",
+      "const": "com.ecommerce.inventory.stock-released.v1"
+    },
+    "source": {
+      "type": "string",
+      "const": "/contexts/inventory"
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reservation_id", "order_id"],
+      "properties": {
+        "reservation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "order_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    }
+  },
+  "required": ["type", "source", "data"]
+}

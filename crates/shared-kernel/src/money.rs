@@ -57,6 +57,7 @@ impl Money {
     }
 
     /// 构造零元值对象
+    #[must_use]
     pub const fn zero(currency: Currency) -> Self {
         Self {
             amount_cents: 0,
@@ -65,16 +66,19 @@ impl Money {
     }
 
     /// 获取金额（分）
+    #[must_use]
     pub const fn amount_cents(&self) -> i64 {
         self.amount_cents
     }
 
     /// 获取币种
+    #[must_use]
     pub const fn currency(&self) -> Currency {
         self.currency
     }
 
     /// 是否为零元
+    #[must_use]
     pub const fn is_zero(&self) -> bool {
         self.amount_cents == 0
     }
@@ -88,6 +92,18 @@ impl Money {
             .amount_cents
             .checked_add(other.amount_cents)
             .ok_or("金额累加溢出")?;
+        Ok(Self {
+            amount_cents: total,
+            currency: self.currency,
+        })
+    }
+
+    /// 金额乘法（乘以数量）
+    pub fn checked_mul(self, factor: u32) -> Result<Self, &'static str> {
+        let total = self
+            .amount_cents
+            .checked_mul(i64::from(factor))
+            .ok_or("金额乘法溢出")?;
         Ok(Self {
             amount_cents: total,
             currency: self.currency,

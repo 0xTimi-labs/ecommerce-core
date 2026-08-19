@@ -21,6 +21,7 @@
     - **事件**：发布 `PaymentFailed`，订阅推进订单状态至已取消
 - **库存履约 [U, PL] → 订单 [D, ACL]**
     - **事件**：发布 `StockReserved`，订阅推进订单状态至待支付
+    - **事件**：发布 `StockReleased`，订阅确认库存释放
     - **事件**：发布 `StockShortage`，订阅触发订单取消与客户通知
 - **订单 ↔ 支付 ↔ 库存履约 [SK]**
     - **共享**：`OrderId`, `CustomerId`, `SkuId`, `Money` 类型

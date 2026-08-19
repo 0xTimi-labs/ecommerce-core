@@ -1,8 +1,8 @@
-//! 订单上下文公共契约
-
+pub mod errors;
 pub mod service;
 
-pub use service::OrderingService;
+pub use errors::OrderingApiError;
+pub use service::OrderingApiService;
 pub use wire_contracts::ordering::v1::{
     CreateOrderRequest, CreateOrderResponse, GetOrderRequest, GetOrderResponse, OrderLineInput,
     OrderStatus, QuoteReference,

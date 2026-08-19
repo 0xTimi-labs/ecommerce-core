@@ -8,6 +8,7 @@ license.workspace = true
 wire-contracts = { path = "../wire-contracts" }
 shared-kernel = { path = "../shared-kernel" }
 serde.workspace = true
+thiserror.workspace = true
 async-trait.workspace = true
 
 [lints]

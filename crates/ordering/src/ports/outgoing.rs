@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 use shared_kernel::OrderId;
 
-use crate::domain::{Order, OrderPlacedEvent, OrderingError};
+use crate::domain::{Order, OrderCancelledEvent, OrderPlacedEvent, OrderingError};
 
 /// 订单仓储出向从端口 (Driven Port)
 #[async_trait]
@@ -17,4 +17,9 @@ pub trait OrderRepositoryPort: Send + Sync {
 pub trait EventPublisherPort: Send + Sync {
     /// 发布订单创建领域事件
     async fn publish_order_placed(&self, event: &OrderPlacedEvent) -> Result<(), OrderingError>;
+    /// 发布订单取消领域事件
+    async fn publish_order_cancelled(
+        &self,
+        event: &OrderCancelledEvent,
+    ) -> Result<(), OrderingError>;
 }

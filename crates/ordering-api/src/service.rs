@@ -3,11 +3,17 @@ use wire_contracts::ordering::v1::{
     CreateOrderRequest, CreateOrderResponse, GetOrderRequest, GetOrderResponse,
 };
 
-/// 订单开放服务契约（基于 Wire Protobuf 契约）
+use crate::errors::OrderingApiError;
+
+/// 订单上下文公共应用服务接口契约
 #[async_trait]
-pub trait OrderingService: Send + Sync {
-    /// 创建订单
-    async fn create_order(&self, req: CreateOrderRequest) -> Result<CreateOrderResponse, String>;
-    /// 查询订单
-    async fn get_order(&self, req: GetOrderRequest) -> Result<Option<GetOrderResponse>, String>;
+pub trait OrderingApiService: Send + Sync {
+    /// 处理创建订单命令
+    async fn create_order(
+        &self,
+        req: CreateOrderRequest,
+    ) -> Result<CreateOrderResponse, OrderingApiError>;
+
+    /// 处理查询订单详情请求
+    async fn get_order(&self, req: GetOrderRequest) -> Result<GetOrderResponse, OrderingApiError>;
 }

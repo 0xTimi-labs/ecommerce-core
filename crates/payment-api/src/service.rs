@@ -4,18 +4,23 @@ use wire_contracts::payment::v1::{
     RefundResponse, VoidAuthorizationRequest, VoidAuthorizationResponse,
 };
 
-/// 支付开放服务契约（基于 Wire Protobuf 契约）
+use crate::errors::PaymentApiError;
+
+/// 支付上下文公共应用服务接口契约
 #[async_trait]
-pub trait PaymentService: Send + Sync {
-    /// 支付授权
-    async fn authorize(&self, req: AuthorizeRequest) -> Result<AuthorizeResponse, String>;
-    /// 支付请款
-    async fn capture(&self, req: CaptureRequest) -> Result<CaptureResponse, String>;
-    /// 撤销授权
+pub trait PaymentApiService: Send + Sync {
+    /// 发起预授权
+    async fn authorize(&self, req: AuthorizeRequest) -> Result<AuthorizeResponse, PaymentApiError>;
+
+    /// 发起请款结算
+    async fn capture(&self, req: CaptureRequest) -> Result<CaptureResponse, PaymentApiError>;
+
+    /// 撤销预授权
     async fn void_authorization(
         &self,
         req: VoidAuthorizationRequest,
-    ) -> Result<VoidAuthorizationResponse, String>;
-    /// 退款
-    async fn refund(&self, req: RefundRequest) -> Result<RefundResponse, String>;
+    ) -> Result<VoidAuthorizationResponse, PaymentApiError>;
+
+    /// 发起交易退款
+    async fn refund(&self, req: RefundRequest) -> Result<RefundResponse, PaymentApiError>;
 }
