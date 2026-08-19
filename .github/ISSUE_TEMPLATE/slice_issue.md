@@ -13,7 +13,7 @@ title: "feat(slice-{context}): {切片动作}"
 
 ## 验收场景
 
-- `crates/{context}/tests/features/{feature_name}.feature`: `{Scenario 名称，移除 @ignore}`
+- `crates/{context}/tests/features/{feature_name}.feature#L{line}`: `{Scenario 名称}`
 
 ## TDD 测试用例
 
