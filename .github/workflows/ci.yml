@@ -231,21 +231,6 @@ jobs:
           restore-keys: |
             pi-session-${{ github.event.pull_request.number }}-
 
-      - name: Configure Pi Auth
-        if: secrets.DEEPSEEK_API_KEY != ''
-        env:
-          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
-        run: |
-          mkdir -p ~/.pi/agent
-          cat << EOF > ~/.pi/agent/auth.json
-          {
-            "deepseek": {
-              "type": "api_key",
-              "key": "$DEEPSEEK_API_KEY"
-            }
-          }
-          EOF
-
       - name: Run Review Orchestrator (Typed FSM)
         run: bun run .github/scripts/ci-review.ts
         env:
