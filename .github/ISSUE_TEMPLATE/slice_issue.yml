@@ -1,5 +1,5 @@
 name: 垂直切片
-description: 定义最小可独立交付与验证的业务垂直切片，通过双层测试驱动开发
+description: 定义最小可独立交付与验证的业务垂直切片
 title: "feat([context]-slice-[N]): "
 labels: ["type/slice"]
 body:
@@ -7,7 +7,7 @@ body:
     attributes:
       value: |
         ## 垂直切片研发任务
-        垂直切片是包含领域逻辑、端口与适配器的最小端到端闭环，通过解除验收场景忽略标记驱动开发。
+        垂直切片是包含领域逻辑、端口与适配器的最小业务闭环，通过解除验收场景忽略标记驱动开发。
 
   - type: input
     id: parent_feature
@@ -21,7 +21,7 @@ body:
   - type: textarea
     id: slice_scope
     attributes:
-      label: 切片范围与业务不变量
+      label: 切片范围与业务逻辑
       description: 说明本切片聚焦的具体业务场景、聚合根状态变迁与领域规则
       placeholder: 实现订单创建请求的校验、聚合根持久化与领域事件发布...
     validations:
@@ -35,17 +35,3 @@ body:
       placeholder: - @scenario-order-001: 客户成功创建包含有效商品的订单
     validations:
       required: true
-
-  - type: checkboxes
-    id: delivery_checklist
-    attributes:
-      label: 交付门禁核对
-      options:
-        - label: 领域聚合根与值对象单元测试全部通过
-          required: true
-        - label: 目标验收场景解除忽略标记且测试通过
-          required: true
-        - label: 适配器实现通过端口契约校验
-          required: true
-        - label: 代码通过静态检查与代码风格门禁
-          required: true
