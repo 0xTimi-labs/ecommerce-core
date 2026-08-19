@@ -1,0 +1,119 @@
+syntax = "proto3";
+
+package ordering.v1;
+
+// 订单服务 RPC 契约
+service OrderingService {
+  // 创建订单（由服务端权威计算金额并校验幂等性）
+  rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse);
+  // 获取订单详情与状态（用于支付发起、履约核对与财务对账）
+  rpc GetOrder(GetOrderRequest) returns (GetOrderResponse);
+  // 取消订单（状态保护：仅允许未履约订单取消并触发补偿事件）
+  rpc CancelOrder(CancelOrderRequest) returns (CancelOrderResponse);
+}
+
+// 货币金额类型
+message Money {
+  // 最小货币单位数值（如分）
+  int64 amount_minor = 1;
+  // ISO 4217 三位货币代码
+  string currency = 2;
+}
+
+// 报价引用快照（防篡改与价格溯源）
+message QuoteReference {
+  // 报价单全局唯一标识
+  string quote_id = 1;
+  // 报价版本号
+  string quote_version = 2;
+}
+
+// 订单项下单输入参数（客户端仅传 SKU 与数量，禁止传单价）
+message OrderLineInput {
+  // 商品 SKU 标识
+  string sku_id = 1;
+  // 购买数量
+  uint32 quantity = 2;
+}
+
+// 订单商品条目明细输出（自包含单价，支撑跨上下文对账）
+message OrderLineDetail {
+  // 商品 SKU 标识
+  string sku_id = 1;
+  // 购买数量
+  uint32 quantity = 2;
+  // 购买单价
+  Money unit_price = 3;
+}
+
+// 创建订单请求
+message CreateOrderRequest {
+  // 下单客户标识
+  string customer_id = 1;
+  // 下单商品条目列表
+  repeated OrderLineInput lines = 2;
+  // 权威报价单引用
+  QuoteReference quote_reference = 3;
+  // 幂等请求键
+  string idempotency_key = 4;
+}
+
+// 创建订单响应
+message CreateOrderResponse {
+  // 生成的订单唯一标识
+  string order_id = 1;
+  // 订单初始状态
+  OrderStatus status = 2;
+}
+
+// 查询订单请求
+message GetOrderRequest {
+  // 目标订单标识
+  string order_id = 1;
+}
+
+// 查询订单响应（自包含金额与明细，支撑跨上下文对账）
+message GetOrderResponse {
+  // 订单唯一标识
+  string order_id = 1;
+  // 当前订单流转状态
+  OrderStatus status = 2;
+  // 下单客户标识
+  string customer_id = 3;
+  // 订单商品条目明细列表
+  repeated OrderLineDetail lines = 4;
+  // 关联报价单快照
+  QuoteReference quote_reference = 5;
+  // 订单总金额
+  Money total_amount = 6;
+}
+
+// 取消订单请求
+message CancelOrderRequest {
+  // 目标订单标识
+  string order_id = 1;
+  // 取消原因
+  string reason = 2;
+}
+
+// 取消订单响应
+message CancelOrderResponse {
+  // 订单唯一标识
+  string order_id = 1;
+  // 订单最终状态
+  OrderStatus status = 2;
+}
+
+// 订单流转状态枚举
+enum OrderStatus {
+  // 未指定状态
+  ORDER_STATUS_UNSPECIFIED = 0;
+  // 已下单待推进
+  ORDER_STATUS_PLACED = 1;
+  // 已支付完成
+  ORDER_STATUS_PAID = 2;
+  // 已取消
+  ORDER_STATUS_CANCELLED = 3;
+  // 已履约完成
+  ORDER_STATUS_FULFILLED = 4;
+}

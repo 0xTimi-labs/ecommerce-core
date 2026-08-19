@@ -1,6 +1,7 @@
 use async_trait::async_trait;
 use wire_contracts::ordering::v1::{
-    CreateOrderRequest, CreateOrderResponse, GetOrderRequest, GetOrderResponse,
+    CancelOrderRequest, CancelOrderResponse, CreateOrderRequest, CreateOrderResponse,
+    GetOrderRequest, GetOrderResponse,
 };
 
 use crate::errors::OrderingApiError;
@@ -16,4 +17,10 @@ pub trait OrderingApiService: Send + Sync {
 
     /// 处理查询订单详情请求
     async fn get_order(&self, req: GetOrderRequest) -> Result<GetOrderResponse, OrderingApiError>;
+
+    /// 处理取消订单命令
+    async fn cancel_order(
+        &self,
+        req: CancelOrderRequest,
+    ) -> Result<CancelOrderResponse, OrderingApiError>;
 }

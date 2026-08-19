@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ecommerce-core.local/events/stock-reserved.v1.schema.json",
+  "title": "StockReservedEvent",
+  "description": "实物库存成功原子锁定事实，代表商品具备履约库存保障",
+  "allOf": [
+    {
+      "$ref": "event-envelope.v1.schema.json"
+    }
+  ],
+  "properties": {
+    "type": {
+      "const": "com.ecommerce.inventory.stock-reserved.v1"
+    },
+    "source": {
+      "const": "/contexts/inventory"
+    },
+    "data": {
+      "type": "object",
+      "required": [
+        "reservation_id",
+        "order_id",
+        "items"
+      ],
+      "properties": {
+        "reservation_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "库存预留流水唯一标识 UUID"
+        },
+        "order_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "关联订单唯一标识 UUID"
+        },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "description": "已锁定的商品 SKU 与数量明细列表",
+          "items": {
+            "type": "object",
+            "required": [
+              "sku_id",
+              "quantity"
+            ],
+            "properties": {
+              "sku_id": {
+                "type": "string",
+                "minLength": 1,
+                "description": "商品 SKU 标识"
+              },
+              "quantity": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "预留数量"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "type": "object"
+}

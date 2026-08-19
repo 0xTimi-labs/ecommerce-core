@@ -1,0 +1,14 @@
+{
+  "specversion": "1.0",
+  "id": "11111111-1111-4111-8111-111111111111",
+  "source": "/contexts/payment",
+  "type": "com.ecommerce.payment.payment-authorized.v1",
+  "time": "2026-01-01T00:00:00Z",
+  "datacontenttype": "application/json",
+  "correlationid": "corr-1001",
+  "causationid": "cause-1001",
+  "data": {
+    "payment_id": "not-a-uuid",
+    "amount_minor": -50
+  }
+}

@@ -1,14 +1,29 @@
+# Rust 构建产物
 /target
+Cargo.lock.bak
+
+# Buf 自动生成契约代码
+crates/wire-contracts/src/generated/
+apps/web/src/generated/
 
 # Node / Bun
 node_modules
 dist
 .astro
+.turbo
 
-# AI Sessions
+# 临时日志与测试覆盖率
+*.log
+coverage/
+.coverage/
+
+# AI 会话与本地缓存
 .pi_session
+.agents-cache/
 
-# IDE & OS
+# IDE 与操作系统文件
 .idea
+.vscode
 .DS_Store
 *.swp
+*.swo

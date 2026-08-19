@@ -1,0 +1,12 @@
+{
+  "specversion": "1.0",
+  "id": "not-uuid",
+  "source": "/contexts/payment",
+  "type": "com.ecommerce.payment.payment-refunded.v1",
+  "time": "invalid-time",
+  "datacontenttype": "application/json",
+  "data": {
+    "payment_id": "not-uuid",
+    "amount_minor": 0
+  }
+}

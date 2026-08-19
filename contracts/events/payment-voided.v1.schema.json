@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ecommerce-core.local/events/payment-voided.v1.schema.json",
+  "title": "PaymentVoidedEvent",
+  "description": "未结算支付预授权额度撤销释放事实",
+  "allOf": [
+    {
+      "$ref": "event-envelope.v1.schema.json"
+    }
+  ],
+  "properties": {
+    "type": {
+      "const": "com.ecommerce.payment.payment-voided.v1"
+    },
+    "source": {
+      "const": "/contexts/payment"
+    },
+    "data": {
+      "type": "object",
+      "required": [
+        "payment_id",
+        "authorization_id",
+        "order_id"
+      ],
+      "properties": {
+        "payment_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "支付单唯一标识 UUID"
+        },
+        "authorization_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "被撤销的预授权凭据流水标识 UUID"
+        },
+        "order_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "关联订单唯一标识 UUID"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "type": "object"
+}

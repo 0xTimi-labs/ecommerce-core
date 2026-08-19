@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ecommerce-core.local/events/payment-captured.v1.schema.json",
+  "title": "PaymentCapturedEvent",
+  "description": "实际资金清算扣款完成事实，用于财务对账并推进订单进入已支付状态",
+  "allOf": [
+    {
+      "$ref": "event-envelope.v1.schema.json"
+    }
+  ],
+  "properties": {
+    "type": {
+      "const": "com.ecommerce.payment.payment-captured.v1"
+    },
+    "source": {
+      "const": "/contexts/payment"
+    },
+    "data": {
+      "type": "object",
+      "required": [
+        "payment_id",
+        "capture_id",
+        "order_id",
+        "amount_minor",
+        "currency"
+      ],
+      "properties": {
+        "payment_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "支付单唯一标识 UUID"
+        },
+        "capture_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "请款结算凭据流水标识 UUID"
+        },
+        "order_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "关联订单唯一标识 UUID"
+        },
+        "amount_minor": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "请款结算金额（最小货币单位，如分）"
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 三位货币代码"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "type": "object"
+}

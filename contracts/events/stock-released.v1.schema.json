@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ecommerce-core.local/events/stock-released.v1.schema.json",
+  "title": "StockReleasedEvent",
+  "description": "库存预留释放事实事件",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "event-envelope.v1.schema.json"
+    }
+  ],
+  "properties": {
+    "type": {
+      "const": "com.ecommerce.inventory.stock-released.v1"
+    },
+    "source": {
+      "const": "/contexts/inventory"
+    },
+    "data": {
+      "type": "object",
+      "required": [
+        "reservation_id",
+        "order_id"
+      ],
+      "properties": {
+        "reservation_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "库存预留标识"
+        },
+        "order_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "关联订单标识"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

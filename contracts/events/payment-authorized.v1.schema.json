@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ecommerce-core.local/events/payment-authorized.v1.schema.json",
+  "title": "PaymentAuthorizedEvent",
+  "description": "资金额度冻结事实，代表交易资金具备履约保障",
+  "allOf": [
+    {
+      "$ref": "event-envelope.v1.schema.json"
+    }
+  ],
+  "properties": {
+    "type": {
+      "const": "com.ecommerce.payment.payment-authorized.v1"
+    },
+    "source": {
+      "const": "/contexts/payment"
+    },
+    "data": {
+      "type": "object",
+      "required": [
+        "payment_id",
+        "authorization_id",
+        "order_id",
+        "amount_minor",
+        "currency"
+      ],
+      "properties": {
+        "payment_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "支付单唯一标识 UUID"
+        },
+        "authorization_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "支付预授权凭据流水标识 UUID"
+        },
+        "order_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "关联订单唯一标识 UUID"
+        },
+        "amount_minor": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "预授权金额（最小货币单位，如分）"
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 三位货币代码"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "type": "object"
+}

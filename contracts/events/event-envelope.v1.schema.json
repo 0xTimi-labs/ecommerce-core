@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ecommerce-core.local/events/event-envelope.v1.schema.json",
+  "title": "EventEnvelope",
+  "description": "严格遵循 CNCF CloudEvents 1.0 规范的领域事件标准信封，统一分布式关联追踪、因果链与消息路由",
+  "type": "object",
+  "required": [
+    "specversion",
+    "id",
+    "source",
+    "type",
+    "time",
+    "datacontenttype",
+    "correlationid",
+    "causationid",
+    "data"
+  ],
+  "properties": {
+    "specversion": {
+      "const": "1.0",
+      "description": "CNCF CloudEvents 协议版本规范，固定为 1.0"
+    },
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "事件全局唯一标识 UUID"
+    },
+    "source": {
+      "type": "string",
+      "minLength": 1,
+      "description": "事件生产者限界上下文 URI（如 /contexts/ordering, /contexts/payment, /contexts/inventory）"
+    },
+    "type": {
+      "type": "string",
+      "minLength": 1,
+      "description": "全局唯一领域事件类型标识（如 com.ecommerce.ordering.order-placed.v1）"
+    },
+    "time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "事件发生时间（ISO 8601 / RFC 3339 UTC 格式）"
+    },
+    "datacontenttype": {
+      "const": "application/json",
+      "description": "事件载荷内容编码格式，固定为 application/json"
+    },
+    "correlationid": {
+      "type": "string",
+      "minLength": 1,
+      "description": "分布式关联追踪链路标识 Correlation ID"
+    },
+    "causationid": {
+      "type": "string",
+      "minLength": 1,
+      "description": "触发本事件的前序直接原因标识 Causation ID"
+    },
+    "data": {
+      "type": "object",
+      "description": "具体的业务领域载荷对象"
+    }
+  },
+  "additionalProperties": false
+}
