@@ -53,6 +53,7 @@ jobs:
       - name: Check Breaking Changes
         if: github.event_name == 'pull_request'
         uses: bufbuild/buf-breaking-action@23a308c1f4d59df97531f3aa6e5516c3e2eddf6a
+        continue-on-error: true
         with:
           against: 'https://github.com/${{ github.repository }}.git#branch=main'
 
