@@ -4,10 +4,8 @@ use std::fmt;
 /// 金额值对象
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Money {
-    /// 金额（分）
-    pub amount_cents: i64,
-    /// 币种
-    pub currency: Currency,
+    amount_cents: i64,
+    currency: Currency,
 }
 
 /// 币种
@@ -33,7 +31,7 @@ impl fmt::Display for Currency {
 
 impl Money {
     /// 构造金额值对象
-    pub fn new(amount_cents: i64, currency: Currency) -> Result<Self, &'static str> {
+    pub const fn new(amount_cents: i64, currency: Currency) -> Result<Self, &'static str> {
         if amount_cents < 0 {
             return Err("金额不能为负数");
         }
@@ -44,11 +42,26 @@ impl Money {
     }
 
     /// 构造零元值对象
-    pub fn zero(currency: Currency) -> Self {
+    pub const fn zero(currency: Currency) -> Self {
         Self {
             amount_cents: 0,
             currency,
         }
+    }
+
+    /// 获取金额（分）
+    pub const fn amount_cents(&self) -> i64 {
+        self.amount_cents
+    }
+
+    /// 获取币种
+    pub const fn currency(&self) -> Currency {
+        self.currency
+    }
+
+    /// 是否为零元
+    pub const fn is_zero(&self) -> bool {
+        self.amount_cents == 0
     }
 
     /// 金额累加
