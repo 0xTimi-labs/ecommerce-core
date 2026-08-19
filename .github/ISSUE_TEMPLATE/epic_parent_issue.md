@@ -1,6 +1,6 @@
 ---
 name: Spec
-description: 业务愿景与契约特性规范
+about: 业务愿景与契约特性规范
 title: "{特性名称}"
 ---
 

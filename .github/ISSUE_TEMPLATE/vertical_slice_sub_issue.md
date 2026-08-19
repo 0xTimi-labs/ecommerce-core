@@ -1,6 +1,6 @@
 ---
 name: Slice
-description: 垂直切片需求
+about: 垂直切片需求
 title: "{切片名称}"
 ---
 

@@ -1,17 +1,13 @@
-## 关联切片
-
-- Sub-Issue: fixes #{sub_issue_id}
-- 解锁场景: `{feature_path}#L{line}` 中的 `{Scenario 标题}`
+Fixes #{issue_id}
 
 ## 自检清单
 
-- [ ] 仅解锁本切片指定的单个 Scenario
-- [ ] `src/features/{action}/tests.rs` 包含实质业务断言
+- [ ] 单元测试包含实质业务断言
 - [ ] 未修改 `contracts/` 下的契约定义
 - [ ] `domain/` 未引入外部库或适配器实现
 - [ ] 跨模块调用严格使用测试替身（若涉及）
 - [ ] 本地 `make check` 全绿
 
-## 说明
+## 非显而易见的考量（可选）
 
-{简要说明本切片的实现重点或设计权衡}
+{仅在存在反直觉处理、特殊边界处理或非显而易见的实现细节时填写，否则删除本节}
