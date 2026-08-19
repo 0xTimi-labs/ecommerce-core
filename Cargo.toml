@@ -45,4 +45,4 @@ cucumber = { version = "0.21", features = ["libtest"] }
 prost = "0.14"
 tonic = "0.14"
 tonic-prost = "0.14"
-jsonschema = "0.28"
+jsonschema = "0.49"
