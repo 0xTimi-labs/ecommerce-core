@@ -36,7 +36,7 @@ jobs:
           command: check
 
   contract-lint:
-    name: Protobuf Contract & Schema Check
+    name: Protobuf Contract Check
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -71,7 +71,7 @@ jobs:
           fi
 
   rust-check-and-test:
-    name: Rust Checks, BDD Tests & Event Schema Tests
+    name: Rust Checks & Tests
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -126,7 +126,7 @@ jobs:
           fi
 
   frontend-check:
-    name: Frontend Linter & Typecheck (Biome + TS)
+    name: Frontend Typecheck & Lint
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:

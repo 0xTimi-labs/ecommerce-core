@@ -77,62 +77,12 @@ jobs:
           }
           EOF
 
-      - name: Execute Agentic Review
+      - name: Run Review Orchestrator (Typed FSM)
+        run: bun run scripts/ci-review-orchestrator.ts
         env:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number || github.event.issue.number }}
           EVENT_NAME: ${{ github.event_name }}
           COMMENT_BODY: ${{ github.event.comment.body }}
-        run: |
-          export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
-
-          if [ -z "$DEEPSEEK_API_KEY" ]; then
-            echo "DEEPSEEK_API_KEY not configured. Skipping..."
-            exit 0
-          fi
-
-          PR_LABELS=$(gh pr view "$PR_NUMBER" --json labels --jq '.labels[].name')
-          if echo "$PR_LABELS" | grep -q "type/architecture"; then
-            SKILL_FILE=".agents/skills/artifact-reviewer/SKILL.md"
-            ROLE="架构与契约审查员"
-          else
-            SKILL_FILE=".agents/skills/code-reviewer/SKILL.md"
-            ROLE="Feature 代码审查员"
-          fi
-
-          # 启动审查时重置状态标签：清除旧的 approved 与 changes-requested
-          gh pr edit "$PR_NUMBER" --remove-label "review/approved" 2>/dev/null || true
-          gh pr edit "$PR_NUMBER" --remove-label "review/changes-requested" 2>/dev/null || true
-
-          # 启动时立即创建占位评论并获取 Comment ID
-          COMMENT_ID=$(gh api "repos/${{ github.repository }}/issues/${PR_NUMBER}/comments" \
-            -X POST \
-            -f body="AI 评审中..." \
-            --jq '.id')
-
-          CONTINUE_FLAG=""
-          if [ "$EVENT_NAME" = "issue_comment" ] && [[ "$COMMENT_BODY" =~ ^/review[[:space:]]+(-c|--continue) ]]; then
-            if [ -d ".pi_session" ] && [ -n "$(ls -A .pi_session 2>/dev/null)" ]; then
-              CONTINUE_FLAG="-c"
-              PROMPT="你是 $ROLE。开发者已更新代码并发出复核指令。请在当前会话中复核最新代码与开发者反馈，重点确认前序问题是否已妥善解决，禁止横向发散新问题，依照 $SKILL_FILE 完成收敛判定。平台已预先在 PR 创建了占位评论（Comment ID: $COMMENT_ID，内容为\"AI 评审中...\"）。请在审查完成后，使用 gh api 工具原位编辑覆写该评论：gh api \"repos/${{ github.repository }}/issues/comments/$COMMENT_ID\" -X PATCH -f body=\"<你的收敛复核报告Markdown>\"。若判定通过请为 PR 添加 review/approved 标签，若存在阻断问题请添加 review/changes-requested 标签。"
-            else
-              PROMPT="你是 $ROLE。当前正在开展 PR #${PR_NUMBER} 的复核。请结合 PR 历史评论记录全面审查当前变更，重点确认前序问题是否已妥善解决，禁止横向发散新问题，依照 $SKILL_FILE 完成收敛判定。平台已预先在 PR 创建了占位评论（Comment ID: $COMMENT_ID，内容为\"AI 评审中...\"）。请在审查完成后，使用 gh api 工具原位编辑覆写该评论：gh api \"repos/${{ github.repository }}/issues/comments/$COMMENT_ID\" -X PATCH -f body=\"<你的收敛复核报告Markdown>\"。若判定通过请为 PR 添加 review/approved 标签，若存在阻断问题请添加 review/changes-requested 标签。"
-            fi
-          else
-            rm -rf .pi_session && mkdir -p .pi_session
-            PROMPT="你是 $ROLE。当前正在开展 PR #${PR_NUMBER} 的全量审查。请全面扫描当前变更，依照 $SKILL_FILE 完成判定。平台已预先在 PR 创建了占位评论（Comment ID: $COMMENT_ID，内容为\"AI 评审中...\"）。请在审查完成后，使用 gh api 工具原位编辑覆写该评论：gh api \"repos/${{ github.repository }}/issues/comments/$COMMENT_ID\" -X PATCH -f body=\"<你的完整审查报告Markdown>\"。若判定通过请为 PR 添加 review/approved 标签，若存在阻断问题请添加 review/changes-requested 标签。"
-          fi
-
-          pi -p "$PROMPT" \
-             --session-dir .pi_session \
-             $CONTINUE_FLAG \
-             --model deepseek/deepseek-v4-flash \
-             --thinking max
-
-          # 审查完成后：代码检测 AI 的打标结果，清理 review/ready 等流程标签
-          CURRENT_LABELS=$(gh pr view "$PR_NUMBER" --json labels --jq '.labels[].name')
-          if echo "$CURRENT_LABELS" | grep -qE "review/(approved|changes-requested)"; then
-            echo "AI 审查已打出结果标签，代码清理流程标签 review/ready..."
-            gh pr edit "$PR_NUMBER" --remove-label "review/ready" 2>/dev/null || true
-          fi
+          REPO: ${{ github.repository }}
