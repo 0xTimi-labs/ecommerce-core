@@ -191,7 +191,7 @@ jobs:
 
       - name: Install and Initialize RTK
         run: |
-          curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/v0.1.0/install.sh | sh
+          curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | sh
           echo "$HOME/.cargo/bin:$HOME/.local/bin" >> $GITHUB_PATH
           export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
           rtk init --agent pi --global
