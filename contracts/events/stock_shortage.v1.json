@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "StockShortageEvent",
+  "type": "object",
+  "required": [
+    "event_id",
+    "order_id",
+    "sku_id",
+    "requested_quantity",
+    "available_quantity",
+    "occurred_at"
+  ],
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "order_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "sku_id": {
+      "type": "string"
+    },
+    "requested_quantity": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "available_quantity": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": false
+}
