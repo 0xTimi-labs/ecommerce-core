@@ -2,11 +2,11 @@ syntax = "proto3";
 
 package ordering.v1;
 
-// 订单服务 RPC 契约
+// 订单服务 RPC 契约 (开放主机服务 OHS)
 service OrderingService {
   // 创建订单（由服务端权威计算金额并校验幂等性）
   rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse);
-  // 获取订单详情与状态
+  // 获取订单详情与状态（用于支付发起、履约核对与财务对账）
   rpc GetOrder(GetOrderRequest) returns (GetOrderResponse);
 }
 
@@ -52,12 +52,22 @@ message GetOrderRequest {
   string order_id = 1;
 }
 
-// 查询订单响应
+// 查询订单响应（自包含金额与明细，支撑跨上下文对账）
 message GetOrderResponse {
   // 订单唯一标识
   string order_id = 1;
-  // 当前订单状态
+  // 当前订单流转状态
   OrderStatus status = 2;
+  // 下单客户标识
+  string customer_id = 3;
+  // 订单商品条目列表
+  repeated OrderLineInput lines = 4;
+  // 关联报价单快照
+  QuoteReference quote_reference = 5;
+  // 订单总金额（最小货币单位，如分）
+  int64 total_amount_minor = 6;
+  // ISO 4217 三位货币代码
+  string currency = 7;
 }
 
 // 订单流转状态枚举

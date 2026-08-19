@@ -12,6 +12,7 @@ serde.workspace = true
 thiserror.workspace = true
 async-trait.workspace = true
 uuid.workspace = true
+chrono.workspace = true
 
 [dev-dependencies]
 cucumber.workspace = true

@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://ecommerce-core.local/events/stock-reserved.v1.schema.json",
-  "title": "StockReserved v1 (CloudEvents)",
-  "description": "实物库存成功原子锁定事实，代表商品具备履约库存保障",
+  "$id": "https://ecommerce-core.local/events/stock-shortage.v1.schema.json",
+  "title": "StockShortage v1 (CloudEvents)",
+  "description": "实物库存不足事实；触发订单自动取消并通知客户缺货补偿",
   "allOf": [
     {
       "$ref": "event-envelope.v1.schema.json"
@@ -10,7 +10,7 @@
   ],
   "properties": {
     "type": {
-      "const": "com.ecommerce.inventory.stock-reserved.v1"
+      "const": "com.ecommerce.inventory.stock-shortage.v1"
     },
     "source": {
       "const": "/contexts/inventory"
@@ -18,41 +18,41 @@
     "data": {
       "type": "object",
       "required": [
-        "reservation_id",
         "order_id",
-        "items"
+        "unavailable_items"
       ],
       "properties": {
-        "reservation_id": {
-          "type": "string",
-          "format": "uuid",
-          "description": "库存预留流水唯一标识 UUID"
-        },
         "order_id": {
           "type": "string",
           "format": "uuid",
           "description": "关联订单唯一标识 UUID"
         },
-        "items": {
+        "unavailable_items": {
           "type": "array",
           "minItems": 1,
-          "description": "已锁定的商品 SKU 与数量明细列表",
+          "description": "缺货商品明细列表",
           "items": {
             "type": "object",
             "required": [
               "sku_id",
-              "quantity"
+              "requested_quantity",
+              "available_quantity"
             ],
             "properties": {
               "sku_id": {
                 "type": "string",
                 "minLength": 1,
-                "description": "商品 SKU 标识"
+                "description": "缺货商品 SKU 标识"
               },
-              "quantity": {
+              "requested_quantity": {
                 "type": "integer",
                 "minimum": 1,
-                "description": "预留数量"
+                "description": "下单请求购买数量"
+              },
+              "available_quantity": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "当前可用实际库存量"
               }
             },
             "additionalProperties": false

@@ -2,16 +2,17 @@
   "specversion": "1.0",
   "id": "11111111-1111-4111-8111-111111111111",
   "source": "/contexts/payment",
-  "type": "com.ecommerce.payment.payment-authorized.v1",
+  "type": "com.ecommerce.payment.payment-failed.v1",
   "time": "2026-01-01T00:00:00Z",
   "datacontenttype": "application/json",
   "correlationid": "corr-1001",
   "causationid": "cause-1001",
   "data": {
     "payment_id": "33333333-3333-4333-8333-333333333333",
-    "authorization_id": "44444444-4444-4444-8444-444444444444",
     "order_id": "22222222-2222-4222-8222-222222222222",
     "amount_minor": 10000,
-    "currency": "CNY"
+    "currency": "CNY",
+    "error_code": "insufficient_funds",
+    "reason": "Cardholder balance is insufficient"
   }
 }

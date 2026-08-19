@@ -1,69 +1,62 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://ecommerce-core-reference.local/events/event-envelope.v1.schema.json",
-  "title": "事件统一 Envelope v1",
-  "description": "全局领域事件标准信封，统一分布式追踪、因果链与时间溯源",
+  "$id": "https://ecommerce-core.local/events/event-envelope.v1.schema.json",
+  "title": "CloudEvents v1.0 统一标准信封",
+  "description": "严格遵循 CNCF CloudEvents 1.0 规范的领域事件标准信封，统一分布式关联追踪、因果链与消息路由",
   "type": "object",
   "required": [
-    "event_id",
-    "event_type",
-    "event_version",
-    "producer",
-    "correlation_id",
-    "causation_id",
-    "aggregate_type",
-    "aggregate_id",
-    "occurred_at",
-    "payload"
+    "specversion",
+    "id",
+    "source",
+    "type",
+    "time",
+    "datacontenttype",
+    "correlationid",
+    "causationid",
+    "data"
   ],
   "properties": {
-    "event_id": {
+    "specversion": {
+      "const": "1.0",
+      "description": "CNCF CloudEvents 协议版本规范，固定为 1.0"
+    },
+    "id": {
       "type": "string",
       "format": "uuid",
       "description": "事件全局唯一标识 UUID"
     },
-    "event_type": {
+    "source": {
       "type": "string",
       "minLength": 1,
-      "description": "事件类型名称（如 order_placed, payment_authorized）"
+      "description": "事件生产者限界上下文 URI（如 /contexts/ordering, /contexts/payment, /contexts/inventory）"
     },
-    "event_version": {
-      "const": 1,
-      "description": "事件协议主版本号"
-    },
-    "producer": {
+    "type": {
       "type": "string",
       "minLength": 1,
-      "description": "事件生产者限界上下文标识（如 ordering, payment, inventory）"
+      "description": "全局唯一领域事件类型标识（如 com.ecommerce.ordering.order-placed.v1）"
     },
-    "correlation_id": {
-      "type": "string",
-      "minLength": 1,
-      "description": "分布式关联追踪标识"
-    },
-    "causation_id": {
-      "type": "string",
-      "minLength": 1,
-      "description": "触发本事件的直接前序原因标识"
-    },
-    "aggregate_type": {
-      "type": "string",
-      "minLength": 1,
-      "description": "所属聚合根类型（如 Order, Payment, StockReservation）"
-    },
-    "aggregate_id": {
-      "type": "string",
-      "format": "uuid",
-      "description": "所属聚合根唯一标识 UUID"
-    },
-    "occurred_at": {
+    "time": {
       "type": "string",
       "format": "date-time",
-      "description": "事件发生时间（ISO 8601 UTC 格式）"
+      "description": "事件发生时间（ISO 8601 / RFC 3339 UTC 格式）"
     },
-    "payload": {
+    "datacontenttype": {
+      "const": "application/json",
+      "description": "事件载荷内容编码格式，固定为 application/json"
+    },
+    "correlationid": {
+      "type": "string",
+      "minLength": 1,
+      "description": "分布式关联追踪链路标识 Correlation ID"
+    },
+    "causationid": {
+      "type": "string",
+      "minLength": 1,
+      "description": "触发本事件的前序直接原因标识 Causation ID"
+    },
+    "data": {
       "type": "object",
-      "description": "事件业务载荷对象"
+      "description": "具体的业务领域载荷对象"
     }
   },
   "additionalProperties": false

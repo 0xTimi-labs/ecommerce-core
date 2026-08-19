@@ -53,15 +53,30 @@ pub struct GetOrderRequest {
     #[prost(string, tag="1")]
     pub order_id: ::prost::alloc::string::String,
 }
-/// 查询订单响应
-#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+/// 查询订单响应（自包含金额与明细，支撑跨上下文对账）
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetOrderResponse {
     /// 订单唯一标识
     #[prost(string, tag="1")]
     pub order_id: ::prost::alloc::string::String,
-    /// 当前订单状态
+    /// 当前订单流转状态
     #[prost(enumeration="OrderStatus", tag="2")]
     pub status: i32,
+    /// 下单客户标识
+    #[prost(string, tag="3")]
+    pub customer_id: ::prost::alloc::string::String,
+    /// 订单商品条目列表
+    #[prost(message, repeated, tag="4")]
+    pub lines: ::prost::alloc::vec::Vec<OrderLineInput>,
+    /// 关联报价单快照
+    #[prost(message, optional, tag="5")]
+    pub quote_reference: ::core::option::Option<QuoteReference>,
+    /// 订单总金额（最小货币单位，如分）
+    #[prost(int64, tag="6")]
+    pub total_amount_minor: i64,
+    /// ISO 4217 三位货币代码
+    #[prost(string, tag="7")]
+    pub currency: ::prost::alloc::string::String,
 }
 /// 订单流转状态枚举
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]

@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ecommerce-core.local/events/order-cancelled.v1.schema.json",
+  "title": "OrderCancelled v1 (CloudEvents)",
+  "description": "订单取消事实；触发支付上下文释放预授权/退款以及库存上下文释放预留库存",
+  "allOf": [
+    {
+      "$ref": "event-envelope.v1.schema.json"
+    }
+  ],
+  "properties": {
+    "type": {
+      "const": "com.ecommerce.ordering.order-cancelled.v1"
+    },
+    "source": {
+      "const": "/contexts/ordering"
+    },
+    "data": {
+      "type": "object",
+      "required": [
+        "order_id",
+        "customer_id",
+        "reason"
+      ],
+      "properties": {
+        "order_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "已取消订单全局唯一标识 UUID"
+        },
+        "customer_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "客户标识"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "description": "取消原因说明（如 customer_request, payment_timeout, stock_shortage）"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "type": "object"
+}

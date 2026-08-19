@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://ecommerce-core.local/events/payment-captured.v1.schema.json",
-  "title": "PaymentCaptured v1 (CloudEvents)",
-  "description": "实际资金清算扣款完成事实，用于财务对账并推进订单进入已支付状态",
+  "$id": "https://ecommerce-core.local/events/payment-failed.v1.schema.json",
+  "title": "PaymentFailed v1 (CloudEvents)",
+  "description": "支付授权或请款失败事实；触发订单状态流转至取消并触发分布式逆向补偿",
   "allOf": [
     {
       "$ref": "event-envelope.v1.schema.json"
@@ -10,7 +10,7 @@
   ],
   "properties": {
     "type": {
-      "const": "com.ecommerce.payment.payment-captured.v1"
+      "const": "com.ecommerce.payment.payment-failed.v1"
     },
     "source": {
       "const": "/contexts/payment"
@@ -19,21 +19,17 @@
       "type": "object",
       "required": [
         "payment_id",
-        "capture_id",
         "order_id",
         "amount_minor",
-        "currency"
+        "currency",
+        "error_code",
+        "reason"
       ],
       "properties": {
         "payment_id": {
           "type": "string",
           "format": "uuid",
           "description": "支付单唯一标识 UUID"
-        },
-        "capture_id": {
-          "type": "string",
-          "format": "uuid",
-          "description": "请款结算凭据流水标识 UUID"
         },
         "order_id": {
           "type": "string",
@@ -43,12 +39,22 @@
         "amount_minor": {
           "type": "integer",
           "minimum": 0,
-          "description": "请款结算金额（最小货币单位，如分）"
+          "description": "拟支付金额"
         },
         "currency": {
           "type": "string",
           "pattern": "^[A-Z]{3}$",
           "description": "ISO 4217 三位货币代码"
+        },
+        "error_code": {
+          "type": "string",
+          "minLength": 1,
+          "description": "支付网关失败错误代码（如 insufficient_funds, card_expired, risk_rejected）"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "description": "支付失败具体原因说明"
         }
       },
       "additionalProperties": false

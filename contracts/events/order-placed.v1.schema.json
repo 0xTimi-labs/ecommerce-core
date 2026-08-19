@@ -1,34 +1,41 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://ecommerce-core-reference.local/events/order-placed.v1.schema.json",
-  "title": "OrderPlaced v1",
-  "description": "客户成功提交订单事实；包含权威报价单引用与总金额，用于触发下游库存预留与支付初始化",
+  "$id": "https://ecommerce-core.local/events/order-placed.v1.schema.json",
+  "title": "OrderPlaced v1 (CloudEvents)",
+  "description": "客户成功提交订单事实；包含权威报价单、金额及商品明细，驱动下游库存预留与支付预授权",
   "allOf": [
     {
       "$ref": "event-envelope.v1.schema.json"
     }
   ],
   "properties": {
-    "event_type": {
-      "const": "order_placed"
+    "type": {
+      "const": "com.ecommerce.ordering.order-placed.v1"
     },
-    "producer": {
-      "const": "ordering"
+    "source": {
+      "const": "/contexts/ordering"
     },
-    "payload": {
+    "data": {
       "type": "object",
       "required": [
         "order_id",
+        "customer_id",
         "quote_id",
         "quote_version",
         "total_amount_minor",
-        "currency"
+        "currency",
+        "items"
       ],
       "properties": {
         "order_id": {
           "type": "string",
           "format": "uuid",
           "description": "订单全局唯一标识 UUID"
+        },
+        "customer_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "下单客户标识"
         },
         "quote_id": {
           "type": "string",
@@ -49,6 +56,31 @@
           "type": "string",
           "pattern": "^[A-Z]{3}$",
           "description": "ISO 4217 三位货币代码"
+        },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "description": "订单包含的商品行项明细列表（用于库存预留自包含履约）",
+          "items": {
+            "type": "object",
+            "required": [
+              "sku_id",
+              "quantity"
+            ],
+            "properties": {
+              "sku_id": {
+                "type": "string",
+                "minLength": 1,
+                "description": "商品 SKU 标识"
+              },
+              "quantity": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "购买数量"
+              }
+            },
+            "additionalProperties": false
+          }
         }
       },
       "additionalProperties": false

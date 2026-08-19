@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file ordering/v1/ordering.proto.
  */
 export const file_ordering_v1_ordering: GenFile = /*@__PURE__*/
-  fileDesc("ChpvcmRlcmluZy92MS9vcmRlcmluZy5wcm90bxILb3JkZXJpbmcudjEiOQoOUXVvdGVSZWZlcmVuY2USEAoIcXVvdGVfaWQYASABKAkSFQoNcXVvdGVfdmVyc2lvbhgCIAEoCSIyCg5PcmRlckxpbmVJbnB1dBIOCgZza3VfaWQYASABKAkSEAoIcXVhbnRpdHkYAiABKA0ipAEKEkNyZWF0ZU9yZGVyUmVxdWVzdBITCgtjdXN0b21lcl9pZBgBIAEoCRIqCgVsaW5lcxgCIAMoCzIbLm9yZGVyaW5nLnYxLk9yZGVyTGluZUlucHV0EjQKD3F1b3RlX3JlZmVyZW5jZRgDIAEoCzIbLm9yZGVyaW5nLnYxLlF1b3RlUmVmZXJlbmNlEhcKD2lkZW1wb3RlbmN5X2tleRgEIAEoCSJRChNDcmVhdGVPcmRlclJlc3BvbnNlEhAKCG9yZGVyX2lkGAEgASgJEigKBnN0YXR1cxgCIAEoDjIYLm9yZGVyaW5nLnYxLk9yZGVyU3RhdHVzIiMKD0dldE9yZGVyUmVxdWVzdBIQCghvcmRlcl9pZBgBIAEoCSJOChBHZXRPcmRlclJlc3BvbnNlEhAKCG9yZGVyX2lkGAEgASgJEigKBnN0YXR1cxgCIAEoDjIYLm9yZGVyaW5nLnYxLk9yZGVyU3RhdHVzKncKC09yZGVyU3RhdHVzEhwKGE9SREVSX1NUQVRVU19VTlNQRUNJRklFRBAAEhcKE09SREVSX1NUQVRVU19QTEFDRUQQARIVChFPUkRFUl9TVEFUVVNfUEFJRBACEhoKFk9SREVSX1NUQVRVU19DQU5DRUxMRUQQAzKsAQoPT3JkZXJpbmdTZXJ2aWNlElAKC0NyZWF0ZU9yZGVyEh8ub3JkZXJpbmcudjEuQ3JlYXRlT3JkZXJSZXF1ZXN0GiAub3JkZXJpbmcudjEuQ3JlYXRlT3JkZXJSZXNwb25zZRJHCghHZXRPcmRlchIcLm9yZGVyaW5nLnYxLkdldE9yZGVyUmVxdWVzdBodLm9yZGVyaW5nLnYxLkdldE9yZGVyUmVzcG9uc2ViBnByb3RvMw");
+  fileDesc("ChpvcmRlcmluZy92MS9vcmRlcmluZy5wcm90bxILb3JkZXJpbmcudjEiOQoOUXVvdGVSZWZlcmVuY2USEAoIcXVvdGVfaWQYASABKAkSFQoNcXVvdGVfdmVyc2lvbhgCIAEoCSIyCg5PcmRlckxpbmVJbnB1dBIOCgZza3VfaWQYASABKAkSEAoIcXVhbnRpdHkYAiABKA0ipAEKEkNyZWF0ZU9yZGVyUmVxdWVzdBITCgtjdXN0b21lcl9pZBgBIAEoCRIqCgVsaW5lcxgCIAMoCzIbLm9yZGVyaW5nLnYxLk9yZGVyTGluZUlucHV0EjQKD3F1b3RlX3JlZmVyZW5jZRgDIAEoCzIbLm9yZGVyaW5nLnYxLlF1b3RlUmVmZXJlbmNlEhcKD2lkZW1wb3RlbmN5X2tleRgEIAEoCSJRChNDcmVhdGVPcmRlclJlc3BvbnNlEhAKCG9yZGVyX2lkGAEgASgJEigKBnN0YXR1cxgCIAEoDjIYLm9yZGVyaW5nLnYxLk9yZGVyU3RhdHVzIiMKD0dldE9yZGVyUmVxdWVzdBIQCghvcmRlcl9pZBgBIAEoCSLzAQoQR2V0T3JkZXJSZXNwb25zZRIQCghvcmRlcl9pZBgBIAEoCRIoCgZzdGF0dXMYAiABKA4yGC5vcmRlcmluZy52MS5PcmRlclN0YXR1cxITCgtjdXN0b21lcl9pZBgDIAEoCRIqCgVsaW5lcxgEIAMoCzIbLm9yZGVyaW5nLnYxLk9yZGVyTGluZUlucHV0EjQKD3F1b3RlX3JlZmVyZW5jZRgFIAEoCzIbLm9yZGVyaW5nLnYxLlF1b3RlUmVmZXJlbmNlEhoKEnRvdGFsX2Ftb3VudF9taW5vchgGIAEoAxIQCghjdXJyZW5jeRgHIAEoCSp3CgtPcmRlclN0YXR1cxIcChhPUkRFUl9TVEFUVVNfVU5TUEVDSUZJRUQQABIXChNPUkRFUl9TVEFUVVNfUExBQ0VEEAESFQoRT1JERVJfU1RBVFVTX1BBSUQQAhIaChZPUkRFUl9TVEFUVVNfQ0FOQ0VMTEVEEAMyrAEKD09yZGVyaW5nU2VydmljZRJQCgtDcmVhdGVPcmRlchIfLm9yZGVyaW5nLnYxLkNyZWF0ZU9yZGVyUmVxdWVzdBogLm9yZGVyaW5nLnYxLkNyZWF0ZU9yZGVyUmVzcG9uc2USRwoIR2V0T3JkZXISHC5vcmRlcmluZy52MS5HZXRPcmRlclJlcXVlc3QaHS5vcmRlcmluZy52MS5HZXRPcmRlclJlc3BvbnNlYgZwcm90bzM");
 
 /**
  * 报价引用快照（防篡改与价格溯源）
@@ -160,7 +160,7 @@ export const GetOrderRequestSchema: GenMessage<GetOrderRequest> = /*@__PURE__*/
   messageDesc(file_ordering_v1_ordering, 4);
 
 /**
- * 查询订单响应
+ * 查询订单响应（自包含金额与明细，支撑跨上下文对账）
  *
  * @generated from message ordering.v1.GetOrderResponse
  */
@@ -173,11 +173,46 @@ export type GetOrderResponse = Message<"ordering.v1.GetOrderResponse"> & {
   orderId: string;
 
   /**
-   * 当前订单状态
+   * 当前订单流转状态
    *
    * @generated from field: ordering.v1.OrderStatus status = 2;
    */
   status: OrderStatus;
+
+  /**
+   * 下单客户标识
+   *
+   * @generated from field: string customer_id = 3;
+   */
+  customerId: string;
+
+  /**
+   * 订单商品条目列表
+   *
+   * @generated from field: repeated ordering.v1.OrderLineInput lines = 4;
+   */
+  lines: OrderLineInput[];
+
+  /**
+   * 关联报价单快照
+   *
+   * @generated from field: ordering.v1.QuoteReference quote_reference = 5;
+   */
+  quoteReference?: QuoteReference | undefined;
+
+  /**
+   * 订单总金额（最小货币单位，如分）
+   *
+   * @generated from field: int64 total_amount_minor = 6;
+   */
+  totalAmountMinor: bigint;
+
+  /**
+   * ISO 4217 三位货币代码
+   *
+   * @generated from field: string currency = 7;
+   */
+  currency: string;
 };
 
 /**
@@ -229,7 +264,7 @@ export const OrderStatusSchema: GenEnum<OrderStatus> = /*@__PURE__*/
   enumDesc(file_ordering_v1_ordering, 0);
 
 /**
- * 订单服务 RPC 契约
+ * 订单服务 RPC 契约 (开放主机服务 OHS)
  *
  * @generated from service ordering.v1.OrderingService
  */
@@ -245,7 +280,7 @@ export const OrderingService: GenService<{
     output: typeof CreateOrderResponseSchema;
   },
   /**
-   * 获取订单详情与状态
+   * 获取订单详情与状态（用于支付发起、履约核对与财务对账）
    *
    * @generated from rpc ordering.v1.OrderingService.GetOrder
    */
