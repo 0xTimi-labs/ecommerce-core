@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ecommerce-core.local/events/payment-refunded.v1.schema.json",
+  "title": "PaymentRefundedEvent",
+  "description": "已结算支付款项成功退款事实",
+  "allOf": [
+    {
+      "$ref": "event-envelope.v1.schema.json"
+    }
+  ],
+  "properties": {
+    "type": {
+      "const": "com.ecommerce.payment.payment-refunded.v1"
+    },
+    "source": {
+      "const": "/contexts/payment"
+    },
+    "data": {
+      "type": "object",
+      "required": [
+        "payment_id",
+        "refund_id",
+        "capture_id",
+        "order_id",
+        "amount_minor",
+        "currency"
+      ],
+      "properties": {
+        "payment_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "支付单唯一标识 UUID"
+        },
+        "refund_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "退款凭据流水标识 UUID"
+        },
+        "capture_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "原请款结算流水标识 UUID"
+        },
+        "order_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "关联订单唯一标识 UUID"
+        },
+        "amount_minor": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "退款金额（最小货币单位，如分）"
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 三位货币代码"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "type": "object"
+}

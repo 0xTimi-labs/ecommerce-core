@@ -3,6 +3,7 @@ use shared_kernel::{AuthorizationId, CaptureId, Money, OrderId, PaymentId};
 
 use crate::domain::{
     Payment, PaymentAuthorizedEvent, PaymentCapturedEvent, PaymentError, PaymentFailedEvent,
+    PaymentRefundedEvent, PaymentVoidedEvent,
 };
 
 /// 支付网关出向从端口
@@ -24,6 +25,9 @@ pub trait PaymentGatewayPort: Send + Sync {
 
     /// 撤销未结算预授权
     async fn void(&self, authorization_id: &AuthorizationId) -> Result<(), PaymentError>;
+
+    /// 发起交易退款
+    async fn refund(&self, capture_id: &CaptureId, amount: Money) -> Result<String, PaymentError>;
 }
 
 /// 支付仓储出向从端口
@@ -52,6 +56,15 @@ pub trait PaymentEventPublisherPort: Send + Sync {
     async fn publish_payment_captured(
         &self,
         event: &PaymentCapturedEvent,
+    ) -> Result<(), PaymentError>;
+
+    /// 发布预授权撤销领域事件
+    async fn publish_payment_voided(&self, event: &PaymentVoidedEvent) -> Result<(), PaymentError>;
+
+    /// 发布退款完成领域事件
+    async fn publish_payment_refunded(
+        &self,
+        event: &PaymentRefundedEvent,
     ) -> Result<(), PaymentError>;
 
     /// 发布支付失败领域事件

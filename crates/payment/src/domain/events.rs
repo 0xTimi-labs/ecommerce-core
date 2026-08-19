@@ -22,6 +22,26 @@ pub struct PaymentCapturedEvent {
     pub occurred_at: DateTime<Utc>,
 }
 
+/// 支付预授权撤销领域事件
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct PaymentVoidedEvent {
+    pub payment_id: PaymentId,
+    pub authorization_id: AuthorizationId,
+    pub order_id: OrderId,
+    pub occurred_at: DateTime<Utc>,
+}
+
+/// 支付退款完成领域事件
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct PaymentRefundedEvent {
+    pub payment_id: PaymentId,
+    pub refund_id: String,
+    pub capture_id: CaptureId,
+    pub order_id: OrderId,
+    pub amount: Money,
+    pub occurred_at: DateTime<Utc>,
+}
+
 /// 支付失败领域事件
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct PaymentFailedEvent {

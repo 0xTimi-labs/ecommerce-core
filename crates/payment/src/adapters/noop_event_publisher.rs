@@ -2,6 +2,7 @@ use async_trait::async_trait;
 
 use crate::domain::{
     PaymentAuthorizedEvent, PaymentCapturedEvent, PaymentError, PaymentFailedEvent,
+    PaymentRefundedEvent, PaymentVoidedEvent,
 };
 use crate::ports::PaymentEventPublisherPort;
 
@@ -26,6 +27,24 @@ impl PaymentEventPublisherPort for NoopPaymentEventPublisher {
     ) -> Result<(), PaymentError> {
         Err(PaymentError::NotImplemented(
             "NoopPaymentEventPublisher::publish_payment_captured",
+        ))
+    }
+
+    async fn publish_payment_voided(
+        &self,
+        _event: &PaymentVoidedEvent,
+    ) -> Result<(), PaymentError> {
+        Err(PaymentError::NotImplemented(
+            "NoopPaymentEventPublisher::publish_payment_voided",
+        ))
+    }
+
+    async fn publish_payment_refunded(
+        &self,
+        _event: &PaymentRefundedEvent,
+    ) -> Result<(), PaymentError> {
+        Err(PaymentError::NotImplemented(
+            "NoopPaymentEventPublisher::publish_payment_refunded",
         ))
     }
 

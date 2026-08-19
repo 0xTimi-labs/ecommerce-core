@@ -2,6 +2,7 @@ import { describe, expect, it } from 'bun:test';
 import {
   ReviewState,
   renderPromptTemplate,
+  resolveReviewMode,
   transition,
 } from './ci-review-orchestrator';
 
@@ -42,6 +43,18 @@ describe('Review Orchestrator State Machine', () => {
     expect(res.nextState).toBe(ReviewState.REVIEWING);
     expect(res.labelsToRemove).toHaveLength(0);
     expect(res.labelsToAdd).toHaveLength(0);
+  });
+});
+
+describe('Review Strategy Resolver', () => {
+  it('should resolve to CONTINUE mode on /review --continue command', () => {
+    expect(resolveReviewMode('issue_comment', '/review --continue 修复')).toBe('CONTINUE');
+    expect(resolveReviewMode('issue_comment', '/review -c')).toBe('CONTINUE');
+  });
+
+  it('should resolve to FRESH mode on pull_request or standard /review', () => {
+    expect(resolveReviewMode('pull_request', '')).toBe('FRESH');
+    expect(resolveReviewMode('issue_comment', '/review 全量审查')).toBe('FRESH');
   });
 });
 

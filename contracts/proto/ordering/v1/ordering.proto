@@ -10,6 +10,14 @@ service OrderingService {
   rpc GetOrder(GetOrderRequest) returns (GetOrderResponse);
 }
 
+// 货币金额类型
+message Money {
+  // 最小货币单位数值（如分）
+  int64 amount_minor = 1;
+  // ISO 4217 三位货币代码
+  string currency = 2;
+}
+
 // 报价引用快照（防篡改与价格溯源）
 message QuoteReference {
   // 报价单全局唯一标识
@@ -24,6 +32,16 @@ message OrderLineInput {
   string sku_id = 1;
   // 购买数量
   uint32 quantity = 2;
+}
+
+// 订单商品条目明细输出（自包含单价，支撑跨上下文对账）
+message OrderLineDetail {
+  // 商品 SKU 标识
+  string sku_id = 1;
+  // 购买数量
+  uint32 quantity = 2;
+  // 购买单价
+  Money unit_price = 3;
 }
 
 // 创建订单请求
@@ -60,14 +78,12 @@ message GetOrderResponse {
   OrderStatus status = 2;
   // 下单客户标识
   string customer_id = 3;
-  // 订单商品条目列表
-  repeated OrderLineInput lines = 4;
+  // 订单商品条目明细列表
+  repeated OrderLineDetail lines = 4;
   // 关联报价单快照
   QuoteReference quote_reference = 5;
-  // 订单总金额（最小货币单位，如分）
-  int64 total_amount_minor = 6;
-  // ISO 4217 三位货币代码
-  string currency = 7;
+  // 订单总金额
+  Money total_amount = 6;
 }
 
 // 订单流转状态枚举

@@ -16,4 +16,4 @@ Feature: 订单创建与校验管理
   Scenario: 客户提交空商品列表时创建订单失败
     Given 客户 "cust-001" 提交了空的商品列表
     When 客户尝试创建订单
-    Then 系统应拒绝创建订单，并提示 "EmptyOrder" 错误
+    Then 系统应拒绝创建订单，并提示空商品列表错误

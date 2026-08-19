@@ -1,27 +1,31 @@
-use serde::{Deserialize, Serialize};
 use shared_kernel::{AuthorizationId, CaptureId, Money, OrderId, PaymentId};
 
 use super::errors::PaymentError;
+use super::events::{
+    PaymentAuthorizedEvent, PaymentCapturedEvent, PaymentFailedEvent, PaymentRefundedEvent,
+    PaymentVoidedEvent,
+};
+use chrono::Utc;
 
-/// 支付流转状态
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+/// 支付聚合流转状态
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum PaymentStatus {
-    /// 待授权
+    /// 待支付处理
     Pending,
-    /// 已授权（额度冻结）
+    /// 已预授权冻结额度
     Authorized,
-    /// 已请款（结算完成）
+    /// 已请款结清
     Captured,
     /// 预授权已撤销
     Voided,
-    /// 已退款
+    /// 款项已退还
     Refunded,
     /// 支付失败
     Failed,
 }
 
 /// 支付聚合根
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Payment {
     id: PaymentId,
     order_id: OrderId,
@@ -32,25 +36,24 @@ pub struct Payment {
 }
 
 impl Payment {
-    /// 创建新的支付意向并校验不变量
-    pub fn new(order_id: OrderId, amount: Money) -> Result<Self, PaymentError> {
-        if amount.is_zero() {
-            return Err(PaymentError::InvalidAmount(
-                "支付意向金额必须大于 0".to_string(),
-            ));
-        }
-        Ok(Self {
-            id: PaymentId::new(),
+    /// 创建待处理支付单
+    #[must_use]
+    pub const fn new(id: PaymentId, order_id: OrderId, amount: Money) -> Self {
+        Self {
+            id,
             order_id,
             amount,
             authorization_id: None,
             capture_id: None,
             status: PaymentStatus::Pending,
-        })
+        }
     }
 
-    /// 执行预授权
-    pub fn authorize(&mut self, authorization_id: AuthorizationId) -> Result<(), PaymentError> {
+    /// 执行预授权冻结
+    pub fn authorize(
+        &mut self,
+        authorization_id: AuthorizationId,
+    ) -> Result<PaymentAuthorizedEvent, PaymentError> {
         if self.status != PaymentStatus::Pending {
             return Err(PaymentError::InvalidStateTransition {
                 from: self.status,
@@ -59,11 +62,17 @@ impl Payment {
         }
         self.authorization_id = Some(authorization_id);
         self.status = PaymentStatus::Authorized;
-        Ok(())
+        Ok(PaymentAuthorizedEvent {
+            payment_id: self.id,
+            authorization_id,
+            order_id: self.order_id,
+            amount: self.amount,
+            occurred_at: Utc::now(),
+        })
     }
 
     /// 执行请款结算
-    pub fn capture(&mut self, capture_id: CaptureId) -> Result<(), PaymentError> {
+    pub fn capture(&mut self, capture_id: CaptureId) -> Result<PaymentCapturedEvent, PaymentError> {
         if self.status != PaymentStatus::Authorized {
             return Err(PaymentError::InvalidStateTransition {
                 from: self.status,
@@ -72,23 +81,69 @@ impl Payment {
         }
         self.capture_id = Some(capture_id);
         self.status = PaymentStatus::Captured;
-        Ok(())
+        Ok(PaymentCapturedEvent {
+            payment_id: self.id,
+            capture_id,
+            order_id: self.order_id,
+            amount: self.amount,
+            occurred_at: Utc::now(),
+        })
     }
 
     /// 撤销预授权
-    pub fn void(&mut self) -> Result<(), PaymentError> {
+    pub fn void(&mut self) -> Result<PaymentVoidedEvent, PaymentError> {
         if self.status != PaymentStatus::Authorized {
             return Err(PaymentError::InvalidStateTransition {
                 from: self.status,
                 to: PaymentStatus::Voided,
             });
         }
+        let authorization_id =
+            self.authorization_id
+                .ok_or(PaymentError::InvalidStateTransition {
+                    from: self.status,
+                    to: PaymentStatus::Voided,
+                })?;
         self.status = PaymentStatus::Voided;
-        Ok(())
+        Ok(PaymentVoidedEvent {
+            payment_id: self.id,
+            authorization_id,
+            order_id: self.order_id,
+            occurred_at: Utc::now(),
+        })
+    }
+
+    /// 执行退款流转
+    pub fn refund(&mut self, refund_id: String) -> Result<PaymentRefundedEvent, PaymentError> {
+        if self.status != PaymentStatus::Captured {
+            return Err(PaymentError::InvalidStateTransition {
+                from: self.status,
+                to: PaymentStatus::Refunded,
+            });
+        }
+        let capture_id = self
+            .capture_id
+            .ok_or(PaymentError::InvalidStateTransition {
+                from: self.status,
+                to: PaymentStatus::Refunded,
+            })?;
+        self.status = PaymentStatus::Refunded;
+        Ok(PaymentRefundedEvent {
+            payment_id: self.id,
+            refund_id,
+            capture_id,
+            order_id: self.order_id,
+            amount: self.amount,
+            occurred_at: Utc::now(),
+        })
     }
 
     /// 标记支付失败（仅允许从待处理或已授权状态流转）
-    pub fn fail(&mut self) -> Result<(), PaymentError> {
+    pub fn fail(
+        &mut self,
+        error_code: String,
+        reason: String,
+    ) -> Result<PaymentFailedEvent, PaymentError> {
         if self.status != PaymentStatus::Pending && self.status != PaymentStatus::Authorized {
             return Err(PaymentError::InvalidStateTransition {
                 from: self.status,
@@ -96,7 +151,14 @@ impl Payment {
             });
         }
         self.status = PaymentStatus::Failed;
-        Ok(())
+        Ok(PaymentFailedEvent {
+            payment_id: self.id,
+            order_id: self.order_id,
+            amount: self.amount,
+            error_code,
+            reason,
+            occurred_at: Utc::now(),
+        })
     }
 
     #[must_use]

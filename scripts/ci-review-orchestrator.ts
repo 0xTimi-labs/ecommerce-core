@@ -69,6 +69,37 @@ export function transition(
 }
 
 /**
+ * 审查模式定义
+ */
+export type ReviewMode = 'FRESH' | 'CONTINUE';
+
+export interface ReviewModeStrategy {
+  templatePath: string;
+  getPiArgs: (hasSession: boolean) => string[];
+}
+
+export const REVIEW_STRATEGIES: Record<ReviewMode, ReviewModeStrategy> = {
+  FRESH: {
+    templatePath: '.github/templates/prompts/initial_review.md',
+    getPiArgs: () => [],
+  },
+  CONTINUE: {
+    templatePath: '.github/templates/prompts/continue_review.md',
+    getPiArgs: (hasSession: boolean) => (hasSession ? ['-c'] : []),
+  },
+};
+
+/**
+ * 声明式解析审查模式
+ */
+export function resolveReviewMode(eventName: string, commentBody: string): ReviewMode {
+  if (eventName === 'issue_comment' && /^\/review\s+(-c|--continue)/.test(commentBody)) {
+    return 'CONTINUE';
+  }
+  return 'FRESH';
+}
+
+/**
  * 渲染 Prompt Markdown 模板文件
  */
 export function renderPromptTemplate(
@@ -165,28 +196,21 @@ export async function runOrchestrator() {
   const commentId = GitHubClient.createPlaceholderComment(repo, prNumber);
   console.log(`[Orchestrator] Created placeholder comment ID: ${commentId}`);
 
-  // 4. 判定是否为 /review --continue 会话复用
-  const isContinueCommand =
-    eventName === 'issue_comment' && /^\/review\s+(-c|--continue)/.test(commentBody);
-  const hasValidSession =
-    existsSync(sessionDir) && readdirSync(sessionDir).length > 0;
+  // 4. 声明式策略模式选择模式与模板
+  const mode = resolveReviewMode(eventName, commentBody);
+  const strategy = REVIEW_STRATEGIES[mode];
+  const hasValidSession = existsSync(sessionDir) && readdirSync(sessionDir).length > 0;
 
-  let continueFlag = '';
-  let templateFile = '.github/templates/prompts/initial_review.md';
-
-  if (isContinueCommand && hasValidSession) {
-    continueFlag = '-c';
-    templateFile = '.github/templates/prompts/continue_review.md';
-    console.log('[Orchestrator] Reusing existing Pi session with --continue');
-  } else {
+  if (mode === 'FRESH' || !hasValidSession) {
     rmSync(sessionDir, { recursive: true, force: true });
     mkdirSync(sessionDir, { recursive: true });
-    templateFile = '.github/templates/prompts/initial_review.md';
-    console.log('[Orchestrator] Initializing fresh Pi session');
   }
 
+  const dynamicPiArgs = strategy.getPiArgs(hasValidSession);
+  console.log(`[Orchestrator] Selected mode: ${mode}, template: ${strategy.templatePath}, session reuse: ${hasValidSession}`);
+
   // 5. 渲染 Prompt 模板
-  const prompt = renderPromptTemplate(templateFile, {
+  const prompt = renderPromptTemplate(strategy.templatePath, {
     role,
     skill_file: skillFile,
     pr_number: prNumber,
@@ -201,7 +225,7 @@ export async function runOrchestrator() {
     'pi',
     '-p', prompt,
     '--session-dir', sessionDir,
-    ...(continueFlag ? [continueFlag] : []),
+    ...dynamicPiArgs,
     '--model', 'deepseek/deepseek-v4-flash',
     '--thinking', 'max',
   ];
