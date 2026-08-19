@@ -1,0 +1,11 @@
+{
+  "event_version": 1,
+  "correlation_id": "corr-1",
+  "causation_id": "cause-1",
+  "aggregate_type": "order",
+  "aggregate_id": "22222222-2222-4222-8222-222222222222",
+  "occurred_at": "2026-01-01T00:00:00Z",
+  "event_type": "event_envelope",
+  "producer": "ordering",
+  "payload": {}
+}

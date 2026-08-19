@@ -1,0 +1,82 @@
+syntax = "proto3";
+
+package payment.v1;
+
+service PaymentService {
+  rpc Authorize(AuthorizeRequest) returns (AuthorizeResponse);
+  rpc Capture(CaptureRequest) returns (CaptureResponse);
+  rpc VoidAuthorization(VoidAuthorizationRequest) returns (VoidAuthorizationResponse);
+  rpc Refund(RefundRequest) returns (RefundResponse);
+}
+
+message Money {
+  int64 amount_minor = 1;
+  string currency = 2;
+}
+
+message AuthorizeRequest {
+  string order_id = 1;
+  Money accepted_amount = 2;
+  string idempotency_key = 3;
+}
+
+message AuthorizeResponse {
+  string payment_id = 1;
+  string authorization_id = 2;
+  AuthorizationStatus status = 3;
+}
+
+message CaptureRequest {
+  string payment_id = 1;
+  string authorization_id = 2;
+  string idempotency_key = 3;
+}
+
+message CaptureResponse {
+  string payment_id = 1;
+  string capture_id = 2;
+  CaptureStatus status = 3;
+}
+
+message VoidAuthorizationRequest {
+  string payment_id = 1;
+  string authorization_id = 2;
+  string idempotency_key = 3;
+}
+
+message VoidAuthorizationResponse {
+  string payment_id = 1;
+  AuthorizationStatus status = 2;
+}
+
+message RefundRequest {
+  string payment_id = 1;
+  string capture_id = 2;
+  Money amount = 3;
+  string idempotency_key = 4;
+}
+
+message RefundResponse {
+  string payment_id = 1;
+  string refund_id = 2;
+  RefundStatus status = 3;
+}
+
+enum AuthorizationStatus {
+  AUTHORIZATION_STATUS_UNSPECIFIED = 0;
+  AUTHORIZATION_STATUS_AUTHORIZED = 1;
+  AUTHORIZATION_STATUS_VOIDED = 2;
+  AUTHORIZATION_STATUS_DECLINED = 3;
+}
+
+enum CaptureStatus {
+  CAPTURE_STATUS_UNSPECIFIED = 0;
+  CAPTURE_STATUS_CAPTURED = 1;
+  CAPTURE_STATUS_FAILED = 2;
+}
+
+enum RefundStatus {
+  REFUND_STATUS_UNSPECIFIED = 0;
+  REFUND_STATUS_REFUNDED = 1;
+  REFUND_STATUS_FAILED = 2;
+}

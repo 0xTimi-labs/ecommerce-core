@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ecommerce-core-reference.local/events/order-placed.v1.schema.json",
+  "title": "OrderPlaced v1",
+  "allOf": [
+    {
+      "$ref": "event-envelope.v1.schema.json"
+    }
+  ],
+  "properties": {
+    "event_type": {
+      "const": "order_placed"
+    },
+    "producer": {
+      "const": "ordering"
+    },
+    "payload": {
+      "type": "object",
+      "required": [
+        "order_id",
+        "quote_id",
+        "quote_version",
+        "total_amount_minor",
+        "currency"
+      ],
+      "properties": {
+        "order_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "quote_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "quote_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "total_amount_minor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "type": "object"
+}

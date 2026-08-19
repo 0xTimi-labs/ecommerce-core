@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package inventory.v1;
+
+service InventoryService {
+  rpc Reserve(ReserveRequest) returns (ReserveResponse);
+  rpc Release(ReleaseRequest) returns (ReleaseResponse);
+}
+
+message ReservationLine {
+  string sku_id = 1;
+  uint32 quantity = 2;
+}
+
+message ReserveRequest {
+  string order_id = 1;
+  repeated ReservationLine lines = 2;
+  string idempotency_key = 3;
+}
+
+message ReserveResponse {
+  string reservation_id = 1;
+  ReservationStatus status = 2;
+}
+
+message ReleaseRequest {
+  string reservation_id = 1;
+  string idempotency_key = 2;
+}
+
+message ReleaseResponse {
+  string reservation_id = 1;
+  ReservationStatus status = 2;
+}
+
+enum ReservationStatus {
+  RESERVATION_STATUS_UNSPECIFIED = 0;
+  RESERVATION_STATUS_RESERVED = 1;
+  RESERVATION_STATUS_REJECTED = 2;
+  RESERVATION_STATUS_RELEASED = 3;
+}

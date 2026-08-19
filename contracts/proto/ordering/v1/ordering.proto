@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package ordering.v1;
+
+service OrderingService {
+  rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse);
+  rpc GetOrder(GetOrderRequest) returns (GetOrderResponse);
+}
+
+message QuoteReference {
+  string quote_id = 1;
+  string quote_version = 2;
+}
+
+message OrderLineInput {
+  string sku_id = 1;
+  uint32 quantity = 2;
+}
+
+message CreateOrderRequest {
+  string customer_id = 1;
+  repeated OrderLineInput lines = 2;
+  QuoteReference quote_reference = 3;
+  string idempotency_key = 4;
+}
+
+message CreateOrderResponse {
+  string order_id = 1;
+  OrderStatus status = 2;
+}
+
+message GetOrderRequest {
+  string order_id = 1;
+}
+
+message GetOrderResponse {
+  string order_id = 1;
+  OrderStatus status = 2;
+}
+
+enum OrderStatus {
+  ORDER_STATUS_UNSPECIFIED = 0;
+  ORDER_STATUS_PLACED = 1;
+  ORDER_STATUS_PAID = 2;
+  ORDER_STATUS_CANCELLED = 3;
+}
