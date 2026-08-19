@@ -1,0 +1,15 @@
+[package]
+name = "inventory"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+shared-kernel = { path = "../shared-kernel" }
+serde.workspace = true
+thiserror.workspace = true
+async-trait.workspace = true
+uuid.workspace = true
+
+[lints]
+workspace = true

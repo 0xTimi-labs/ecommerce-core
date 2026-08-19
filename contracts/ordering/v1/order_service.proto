@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package ordering.v1;
+
+service OrderService {
+  rpc CreateOrder (CreateOrderRequest) returns (CreateOrderResponse);
+  rpc GetOrder (GetOrderRequest) returns (GetOrderResponse);
+}
+
+message CreateOrderRequest {
+  string customer_id = 1;
+  repeated OrderItemInput items = 2;
+}
+
+message OrderItemInput {
+  string sku_id = 1;
+  uint32 quantity = 2;
+  int64 unit_price_cents = 3;
+  string currency = 4;
+}
+
+message CreateOrderResponse {
+  string order_id = 1;
+  string status = 2;
+}
+
+message GetOrderRequest {
+  string order_id = 1;
+}
+
+message GetOrderResponse {
+  string order_id = 1;
+  string customer_id = 2;
+  string status = 3;
+  int64 total_amount_cents = 4;
+  string currency = 5;
+  repeated OrderItemView items = 6;
+}
+
+message OrderItemView {
+  string sku_id = 1;
+  uint32 quantity = 2;
+  int64 unit_price_cents = 3;
+  string currency = 4;
+}
