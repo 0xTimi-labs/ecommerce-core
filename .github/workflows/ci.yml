@@ -20,17 +20,17 @@ jobs:
           fetch-depth: 0
 
       - name: Gitleaks Secret Scan
-        uses: gitleaks/gitleaks-action@e811c750b3cb1c5e9f89fb0e5bfb04d1c1cf6cf9 # v3.0.0
+        uses: gitleaks/gitleaks-action@bcfb9cce635345aac9996cedc19b2de8e01b894f
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Dependency Review (PR only)
         if: github.event_name == 'pull_request'
-        uses: actions/dependency-review-action@abeac294b46c6b3602120015509930f769068007 # v4.9.0
+        uses: actions/dependency-review-action@1e966ba708e4b64bb0c9bfb7abb5a232840be16a
 
       - name: Check Cargo Dependencies & Licenses
         if: hashFiles('Cargo.toml') != ''
-        uses: EmbarkStudios/cargo-deny-action@8371184b99c5a887734d7e37b5b4705cb4f5c656 # v2.0.11
+        uses: EmbarkStudios/cargo-deny-action@9c67a826e39827395bfa619cd85cb2aaeb43cfaa
         with:
           command: check
 
@@ -52,17 +52,17 @@ jobs:
 
       - name: Setup Buf
         if: steps.check-contracts.outputs.has_contracts == 'true'
-        uses: bufbuild/buf-setup-action@e6d97c5e263ab21e35a11c1d81dbdd45c1106cf2 # v1.50.0
+        uses: bufbuild/buf-setup-action@fbb91772b52752bd36ca8552d2ff4b94e111f24f
 
       - name: Lint Protobuf Contracts
         if: steps.check-contracts.outputs.has_contracts == 'true'
-        uses: bufbuild/buf-lint-action@06f9dd9e36814b184206e78d38e217fb75f1b13b # v1.1.1
+        uses: bufbuild/buf-lint-action@f083debe706775d9342e791bd05644d8bdb56e11
         with:
           input: contracts
 
       - name: Check Breaking Changes
         if: github.event_name == 'pull_request' && steps.check-contracts.outputs.has_contracts == 'true'
-        uses: bufbuild/buf-breaking-action@184918e974e64f89dcf8cfd9ea313c01c0cf9cb3 # v1.1.4
+        uses: bufbuild/buf-breaking-action@23a308c1f4d59df97531f3aa6e5516c3e2eddf6a
         with:
           input: contracts
           against: 'https://github.com/${{ github.repository }}.git#branch=main'
@@ -85,13 +85,13 @@ jobs:
 
       - name: Install Rust Stable
         if: steps.check-rust.outputs.has_rust == 'true'
-        uses: dtolnay/rust-toolchain@7b766865e5730b1b8414a8934358f64848274d23 # stable
+        uses: dtolnay/rust-toolchain@6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772
         with:
           components: clippy, rustfmt
 
       - name: Rust Cache
         if: steps.check-rust.outputs.has_rust == 'true'
-        uses: Swatinem/rust-cache@82a92a6e8fbeee08c6c4da5271996f54d38e7de7 # v2.7.7
+        uses: Swatinem/rust-cache@f0d9c3887740aee45f6153b24b3a6b815192ec16
 
       - name: Check Formatting
         if: steps.check-rust.outputs.has_rust == 'true'
@@ -123,7 +123,7 @@ jobs:
 
       - name: Setup Bun
         if: steps.check-frontend.outputs.has_frontend == 'true'
-        uses: oven-sh/setup-bun@4bc047ad259df6fc24a6c9b0f9a0cb08cf37fdd5 # v2
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6
 
       - name: Install Frontend Dependencies
         if: steps.check-frontend.outputs.has_frontend == 'true'

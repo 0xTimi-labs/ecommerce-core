@@ -15,16 +15,29 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
+      - name: Check if Cargo exists
+        id: check-rust
+        run: |
+          if [ -f Cargo.toml ]; then
+            echo "has_rust=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_rust=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Install Rust Stable
-        uses: dtolnay/rust-toolchain@7b766865e5730b1b8414a8934358f64848274d23 # stable
+        if: steps.check-rust.outputs.has_rust == 'true'
+        uses: dtolnay/rust-toolchain@6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772 # stable
         with:
           components: clippy, rustfmt
 
       - name: Rust Cache
-        uses: Swatinem/rust-cache@82a92a6e8fbeee08c6c4da5271996f54d38e7de7 # v2.7.7
+        if: steps.check-rust.outputs.has_rust == 'true'
+        uses: Swatinem/rust-cache@f0d9c3887740aee45f6153b24b3a6b815192ec16 # v2.7.7
 
       - name: Full Workspace Build & Clippy
+        if: steps.check-rust.outputs.has_rust == 'true'
         run: cargo clippy --workspace --all-targets -- -D warnings
 
       - name: Execute All Validated Tests
+        if: steps.check-rust.outputs.has_rust == 'true'
         run: cargo test --workspace -- --skip ignore
