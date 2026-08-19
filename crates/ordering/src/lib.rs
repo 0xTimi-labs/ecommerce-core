@@ -3,4 +3,4 @@ pub mod domain;
 pub mod ports;
 
 pub use domain::{Order, OrderItem, OrderPlacedEvent, OrderStatus, OrderingError};
-pub use ports::{EventPublisherPort, OrderEventPublisherPort, OrderRepositoryPort};
+pub use ports::{OrderEventPublisherPort, OrderRepositoryPort};

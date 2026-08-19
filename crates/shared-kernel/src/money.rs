@@ -11,7 +11,6 @@ pub struct Money {
 
 #[derive(Deserialize)]
 struct MoneyRaw {
-    #[serde(alias = "amount_cents")]
     amount_minor: i64,
     currency: Currency,
 }
@@ -69,12 +68,6 @@ impl Money {
     /// 获取金额数值（最小货币单位）
     #[must_use]
     pub const fn amount_minor(&self) -> i64 {
-        self.amount_minor
-    }
-
-    /// 获取金额（分，兼容别名）
-    #[must_use]
-    pub const fn amount_cents(&self) -> i64 {
         self.amount_minor
     }
 

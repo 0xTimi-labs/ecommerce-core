@@ -23,6 +23,3 @@ pub trait OrderEventPublisherPort: Send + Sync {
         event: &OrderCancelledEvent,
     ) -> Result<(), OrderingError>;
 }
-
-/// 别名兼容
-pub use OrderEventPublisherPort as EventPublisherPort;

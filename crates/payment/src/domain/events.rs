@@ -1,6 +1,6 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use shared_kernel::{AuthorizationId, CaptureId, Money, OrderId, PaymentId};
+use shared_kernel::{AuthorizationId, CaptureId, Money, OrderId, PaymentId, RefundId};
 
 /// 支付预授权完成领域事件
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -35,7 +35,7 @@ pub struct PaymentVoidedEvent {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct PaymentRefundedEvent {
     pub payment_id: PaymentId,
-    pub refund_id: String,
+    pub refund_id: RefundId,
     pub capture_id: CaptureId,
     pub order_id: OrderId,
     pub amount: Money,

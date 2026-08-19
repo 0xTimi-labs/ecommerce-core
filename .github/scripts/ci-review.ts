@@ -1,9 +1,10 @@
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 
-/**
- * PR 审查生命周期的显式状态枚举
- */
+// ==========================================
+// 1. 类型定义
+// ==========================================
+
 export enum ReviewState {
   IDLE = 'IDLE',
   REVIEWING = 'REVIEWING',
@@ -11,12 +12,7 @@ export enum ReviewState {
   CHANGES_REQUESTED = 'CHANGES_REQUESTED',
 }
 
-/**
- * 状态机触发事件
- */
-export type ReviewEvent =
-  | { type: 'START_REVIEW' }
-  | { type: 'EVALUATE_AI_VERDICT'; currentLabels: string[] };
+export type ReviewMode = 'FRESH' | 'CONTINUE';
 
 export interface StateTransitionResult {
   nextState: ReviewState;
@@ -24,12 +20,29 @@ export interface StateTransitionResult {
   labelsToRemove: string[];
 }
 
-/**
- * 纯函数：计算审查状态转移与标签变更集合
- */
+export interface ReviewStrategy {
+  templatePath: string;
+  getPiArgs: (hasSession: boolean) => string[];
+}
+
+// ==========================================
+// 2. 纯函数状态机与策略表
+// ==========================================
+
+export const REVIEW_STRATEGIES: Record<ReviewMode, ReviewStrategy> = {
+  FRESH: {
+    templatePath: '.github/templates/prompts/initial_review.md',
+    getPiArgs: () => [],
+  },
+  CONTINUE: {
+    templatePath: '.github/templates/prompts/continue_review.md',
+    getPiArgs: (hasSession: boolean) => (hasSession ? ['-c'] : []),
+  },
+};
+
 export function transition(
   currentState: ReviewState,
-  event: ReviewEvent
+  event: { type: 'START_REVIEW' } | { type: 'EVALUATE_AI_VERDICT'; currentLabels: string[] }
 ): StateTransitionResult {
   switch (event.type) {
     case 'START_REVIEW':
@@ -68,30 +81,6 @@ export function transition(
   }
 }
 
-/**
- * 审查模式定义
- */
-export type ReviewMode = 'FRESH' | 'CONTINUE';
-
-export interface ReviewModeStrategy {
-  templatePath: string;
-  getPiArgs: (hasSession: boolean) => string[];
-}
-
-export const REVIEW_STRATEGIES: Record<ReviewMode, ReviewModeStrategy> = {
-  FRESH: {
-    templatePath: '.github/templates/prompts/initial_review.md',
-    getPiArgs: () => [],
-  },
-  CONTINUE: {
-    templatePath: '.github/templates/prompts/continue_review.md',
-    getPiArgs: (hasSession: boolean) => (hasSession ? ['-c'] : []),
-  },
-};
-
-/**
- * 声明式解析审查模式
- */
 export function resolveReviewMode(eventName: string, commentBody: string): ReviewMode {
   if (eventName === 'issue_comment' && /^\/review\s+(-c|--continue)/.test(commentBody)) {
     return 'CONTINUE';
@@ -99,10 +88,7 @@ export function resolveReviewMode(eventName: string, commentBody: string): Revie
   return 'FRESH';
 }
 
-/**
- * 渲染 Prompt Markdown 模板文件
- */
-export function renderPromptTemplate(
+export function renderPrompt(
   templatePath: string,
   variables: Record<string, string>
 ): string {
@@ -114,9 +100,10 @@ export function renderPromptTemplate(
   return content;
 }
 
-/**
- * GitHub CLI 强类型客户端
- */
+// ==========================================
+// 3. GitHub CLI 客户端
+// ==========================================
+
 export class GitHubClient {
   static getPrLabels(prNumber: string): string[] {
     const proc = Bun.spawnSync([
@@ -156,13 +143,14 @@ export class GitHubClient {
   }
 }
 
-/**
- * 审查编排主入口
- */
-export async function runOrchestrator() {
+// ==========================================
+// 4. 主流程编排
+// ==========================================
+
+export async function runReview() {
   const deepseekApiKey = process.env.DEEPSEEK_API_KEY;
   if (!deepseekApiKey) {
-    console.log('[Orchestrator] DEEPSEEK_API_KEY not configured. Skipping review.');
+    console.log('[CI Review] DEEPSEEK_API_KEY not configured. Skipping review.');
     return;
   }
 
@@ -173,12 +161,12 @@ export async function runOrchestrator() {
   const sessionDir = join(process.cwd(), '.pi_session');
 
   if (!prNumber || !repo) {
-    throw new Error('[Orchestrator] Missing PR_NUMBER or REPO environment variables.');
+    throw new Error('[CI Review] Missing PR_NUMBER or REPO environment variables.');
   }
 
-  console.log(`[Orchestrator] Starting Review for PR #${prNumber} in ${repo} (Event: ${eventName})`);
+  console.log(`[CI Review] Starting Review for PR #${prNumber} in ${repo} (Event: ${eventName})`);
 
-  // 1. 获取 PR 标签与判定角色与审查规则
+  // 1. 获取当前 PR 标签，选择审查角色与规范
   const initialLabels = GitHubClient.getPrLabels(prNumber);
   const isArchitecturePr = initialLabels.includes('type/architecture');
   const skillFile = isArchitecturePr
@@ -186,7 +174,7 @@ export async function runOrchestrator() {
     : '.agents/skills/code-reviewer/SKILL.md';
   const role = isArchitecturePr ? '架构与契约审查员' : 'Feature 代码审查员';
 
-  // 2. 状态机：进入 REVIEWING 状态并清理历史终态标签
+  // 2. 状态机：进入 REVIEWING 状态并清理旧结果标
   let state = ReviewState.IDLE;
   const startTransition = transition(state, { type: 'START_REVIEW' });
   state = startTransition.nextState;
@@ -194,9 +182,9 @@ export async function runOrchestrator() {
 
   // 3. 发布极简占位评论
   const commentId = GitHubClient.createPlaceholderComment(repo, prNumber);
-  console.log(`[Orchestrator] Created placeholder comment ID: ${commentId}`);
+  console.log(`[CI Review] Created placeholder comment ID: ${commentId}`);
 
-  // 4. 声明式策略模式选择模式与模板
+  // 4. 解析模式与模板策略
   const mode = resolveReviewMode(eventName, commentBody);
   const strategy = REVIEW_STRATEGIES[mode];
   const hasValidSession = existsSync(sessionDir) && readdirSync(sessionDir).length > 0;
@@ -207,10 +195,10 @@ export async function runOrchestrator() {
   }
 
   const dynamicPiArgs = strategy.getPiArgs(hasValidSession);
-  console.log(`[Orchestrator] Selected mode: ${mode}, template: ${strategy.templatePath}, session reuse: ${hasValidSession}`);
+  console.log(`[CI Review] Selected mode: ${mode}, template: ${strategy.templatePath}, session reuse: ${hasValidSession}`);
 
   // 5. 渲染 Prompt 模板
-  const prompt = renderPromptTemplate(strategy.templatePath, {
+  const prompt = renderPrompt(strategy.templatePath, {
     role,
     skill_file: skillFile,
     pr_number: prNumber,
@@ -218,9 +206,9 @@ export async function runOrchestrator() {
     repo,
   });
 
-  console.log(`[Orchestrator] Running Pi CLI with model deepseek/deepseek-v4-flash...`);
+  console.log(`[CI Review] Running Pi CLI with model deepseek/deepseek-v4-flash...`);
 
-  // 6. 执行 Pi CLI 进行 Tool-Calling 深度审查
+  // 6. 执行 Pi CLI 进行 Tool Calling 深度审查
   const piArgs = [
     'pi',
     '-p', prompt,
@@ -240,12 +228,12 @@ export async function runOrchestrator() {
   });
 
   if (piProc.exitCode !== 0) {
-    console.warn(`[Orchestrator] Pi CLI exited with code ${piProc.exitCode}`);
+    console.warn(`[CI Review] Pi CLI exited with code ${piProc.exitCode}`);
   }
 
-  // 7. 审查结束：检测 AI 结果标签，状态机流转并清理 review/ready
+  // 7. 终态收敛：检测 AI 结果标签，状态机流转并自动清理 review/ready
   const postReviewLabels = GitHubClient.getPrLabels(prNumber);
-  console.log(`[Orchestrator] Post-review labels: ${JSON.stringify(postReviewLabels)}`);
+  console.log(`[CI Review] Post-review labels: ${JSON.stringify(postReviewLabels)}`);
 
   const endTransition = transition(state, {
     type: 'EVALUATE_AI_VERDICT',
@@ -253,14 +241,13 @@ export async function runOrchestrator() {
   });
   state = endTransition.nextState;
 
-  console.log(`[Orchestrator] Final Review State: ${state}`);
+  console.log(`[CI Review] Final Review State: ${state}`);
   GitHubClient.syncLabels(prNumber, endTransition.labelsToAdd, endTransition.labelsToRemove);
 }
 
-// CLI 直接运行支持
 if (import.meta.main) {
-  runOrchestrator().catch((err) => {
-    console.error(`[Orchestrator] Fatal error:`, err);
+  runReview().catch((err) => {
+    console.error(`[CI Review] Fatal error:`, err);
     process.exit(1);
   });
 }

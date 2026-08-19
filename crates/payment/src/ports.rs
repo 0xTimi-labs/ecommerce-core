@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use shared_kernel::{AuthorizationId, CaptureId, Money, OrderId, PaymentId};
+use shared_kernel::{AuthorizationId, CaptureId, Money, OrderId, PaymentId, RefundId};
 
 use crate::domain::{
     Payment, PaymentAuthorizedEvent, PaymentCapturedEvent, PaymentError, PaymentFailedEvent,
@@ -27,7 +27,8 @@ pub trait PaymentGatewayPort: Send + Sync {
     async fn void(&self, authorization_id: &AuthorizationId) -> Result<(), PaymentError>;
 
     /// 发起交易退款
-    async fn refund(&self, capture_id: &CaptureId, amount: Money) -> Result<String, PaymentError>;
+    async fn refund(&self, capture_id: &CaptureId, amount: Money)
+    -> Result<RefundId, PaymentError>;
 }
 
 /// 支付仓储出向从端口

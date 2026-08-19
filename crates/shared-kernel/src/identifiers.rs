@@ -258,6 +258,54 @@ impl From<Uuid> for CaptureId {
     }
 }
 
+/// 退款凭据流水标识
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub struct RefundId(Uuid);
+
+impl RefundId {
+    #[must_use]
+    pub fn new() -> Self {
+        Self(Uuid::new_v4())
+    }
+
+    #[must_use]
+    pub const fn from_uuid(uuid: Uuid) -> Self {
+        Self(uuid)
+    }
+
+    #[must_use]
+    pub const fn as_uuid(&self) -> &Uuid {
+        &self.0
+    }
+
+    #[must_use]
+    pub const fn into_inner(self) -> Uuid {
+        self.0
+    }
+
+    pub fn parse_str(s: &str) -> Result<Self, uuid::Error> {
+        Uuid::parse_str(s).map(Self)
+    }
+}
+
+impl Default for RefundId {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl fmt::Display for RefundId {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
+impl From<Uuid> for RefundId {
+    fn from(uuid: Uuid) -> Self {
+        Self(uuid)
+    }
+}
+
 /// 库存预留流水标识
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct ReservationId(Uuid);

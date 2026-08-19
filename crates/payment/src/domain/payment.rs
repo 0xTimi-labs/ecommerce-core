@@ -1,4 +1,4 @@
-use shared_kernel::{AuthorizationId, CaptureId, Money, OrderId, PaymentId};
+use shared_kernel::{AuthorizationId, CaptureId, Money, OrderId, PaymentId, RefundId};
 
 use super::errors::PaymentError;
 use super::events::{
@@ -114,7 +114,7 @@ impl Payment {
     }
 
     /// 执行退款流转
-    pub fn refund(&mut self, refund_id: String) -> Result<PaymentRefundedEvent, PaymentError> {
+    pub fn refund(&mut self, refund_id: RefundId) -> Result<PaymentRefundedEvent, PaymentError> {
         if self.status != PaymentStatus::Captured {
             return Err(PaymentError::InvalidStateTransition {
                 from: self.status,
