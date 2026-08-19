@@ -1,12 +1,12 @@
 name: 架构与契约制品
-description: 提交领域模型、架构决策、Protobuf 契约、CloudEvents 事件模式或 BDD 规格定义等工程制品
+description: 提交领域模型、架构决策、接口契约、事件模式或验收规格等工程制品
 title: "feat(arch): "
 labels: ["type/architecture"]
 body:
   - type: markdown
     attributes:
       value: |
-        ## 制品定义与规范
+        ## 架构与契约制品
         本模板适用于定义或变更架构设计、跨上下文契约网络、领域模型及验收规格。
 
   - type: dropdown
@@ -16,7 +16,7 @@ body:
       description: 请选择本次交付或变更的核心制品类型
       options:
         - 架构设计与上下文地图
-        - RPC 接口契约
+        - 接口契约
         - 领域事件模式
         - 业务验收规格
         - 架构决策记录
@@ -47,15 +47,3 @@ body:
       label: 关联业务验收场景
       description: 列出对应的 Gherkin Feature 场景及 Scenario 标识
       placeholder: - @scenario-order-001: 客户成功创建有效订单...
-
-  - type: checkboxes
-    id: readiness_checklist
-    attributes:
-      label: 交付门禁核对
-      options:
-        - label: 契约定义符合协议规范并通过本地代码生成（如 buf generate）
-          required: true
-        - label: 事件模式符合规范并通过自动化契约测试
-          required: true
-        - label: 文档与上下文地图保持同步更新
-          required: true

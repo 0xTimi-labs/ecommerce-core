@@ -1,4 +1,4 @@
-name: 最终端到端集成验收
+name: 端到端集成验收
 description: 跨上下文全链路业务协同验证与发布就绪核验
 title: "feat(integration): "
 labels: ["type/integration"]
@@ -6,26 +6,14 @@ body:
   - type: markdown
     attributes:
       value: |
-        ## 最终集成验收
-        所有切片合入后，进行跨上下文端到端真实协同演练与全量门禁审查。
+        ## 端到端集成验收
+        所有切片完成后，进行跨上下文业务协同演练与全链路验收。
 
   - type: textarea
     id: integration_scope
     attributes:
       label: 全链路集成范围
-      description: 描述跨越订单、支付、库存三大上下文的端到端业务交易流程
-      placeholder: 验证客户从提交订单、库存锁定、支付冻结到结算扣款的完整交易流程...
+      description: 描述跨越订单、支付、库存等上下文的端到端业务交易流程与验证场景
+      placeholder: 验证客户从提交订单、库存预留、支付授权到结算扣款的完整交易流程...
     validations:
       required: true
-
-  - type: checkboxes
-    id: release_checklist
-    attributes:
-      label: 发布就绪门禁
-      options:
-        - label: 全量业务验收场景全部通过
-          required: true
-        - label: 跨上下文事件驱动协同演练（含正向交易与逆向补偿）通过
-          required: true
-        - label: 通过所有代码与依赖安全审计
-          required: true

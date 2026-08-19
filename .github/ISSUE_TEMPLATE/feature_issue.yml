@@ -32,6 +32,6 @@ body:
     attributes:
       label: 垂直切片拆解计划
       description: 将该特性拆解为最小可闭环验证的切片清单及执行顺序
-      placeholder: "- [ ] 切片 1: 正向核心流程与内存仓储\n- [ ] 切片 2: 异常分支与逆向补偿流程\n- [ ] 切片 3: 真实适配器与持久化接入"
+      placeholder: "1. 切片 1: 正向核心流程与内存仓储\n2. 切片 2: 异常分支与逆向补偿流程\n3. 切片 3: 真实适配器与持久化接入"
     validations:
       required: true
