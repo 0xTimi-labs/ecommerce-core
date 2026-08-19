@@ -5,28 +5,17 @@ import { join } from 'node:path';
 // 1. 类型定义
 // ==========================================
 
-export enum ReviewState {
-  IDLE = 'IDLE',
-  REVIEWING = 'REVIEWING',
-  APPROVED = 'APPROVED',
-  CHANGES_REQUESTED = 'CHANGES_REQUESTED',
-}
-
 export type ReviewMode = 'FRESH' | 'CONTINUE';
-
-export interface StateTransitionResult {
-  nextState: ReviewState;
-  labelsToAdd: string[];
-  labelsToRemove: string[];
-}
 
 export interface ReviewStrategy {
   templatePath: string;
   getPiArgs: (hasSession: boolean) => string[];
 }
 
+export const STATUS_CONTEXT = 'AI Review Gate';
+
 // ==========================================
-// 2. 纯函数状态机与策略表
+// 2. 策略表与纯函数
 // ==========================================
 
 export const REVIEW_STRATEGIES: Record<ReviewMode, ReviewStrategy> = {
@@ -39,38 +28,6 @@ export const REVIEW_STRATEGIES: Record<ReviewMode, ReviewStrategy> = {
     getPiArgs: (hasSession: boolean) => (hasSession ? ['-c'] : []),
   },
 };
-
-export function transition(
-  currentState: ReviewState,
-  event: { type: 'START_REVIEW' } | { type: 'EVALUATE_AI_VERDICT'; currentLabels: string[] }
-): StateTransitionResult {
-  switch (event.type) {
-    case 'START_REVIEW':
-      return {
-        nextState: ReviewState.REVIEWING,
-        labelsToAdd: ['review/in-progress'],
-        labelsToRemove: ['review/approved', 'review/changes-requested'],
-      };
-
-    case 'EVALUATE_AI_VERDICT': {
-      const hasChangesRequested = event.currentLabels.includes('review/changes-requested');
-
-      if (hasChangesRequested) {
-        return {
-          nextState: ReviewState.CHANGES_REQUESTED,
-          labelsToAdd: [],
-          labelsToRemove: ['review/in-progress', 'review/approved'],
-        };
-      }
-
-      return {
-        nextState: ReviewState.APPROVED,
-        labelsToAdd: ['review/approved'],
-        labelsToRemove: ['review/in-progress', 'review/changes-requested'],
-      };
-    }
-  }
-}
 
 export function resolveReviewMode(eventName: string, commentBody: string): ReviewMode {
   if (eventName === 'issue_comment' && /^\/review\s+(-c|--continue)/.test(commentBody)) {
@@ -91,11 +48,41 @@ export function renderPrompt(
   return content;
 }
 
+export function parseVerdictFromReport(reportText: string): { hasP0: boolean; p0Count: number } {
+  // 匹配类似 "- P0: 0" 或 "P0: 2" 等标准报告头部
+  const p0Match = reportText.match(/P0:\s*(\d+)/i);
+  if (p0Match) {
+    const count = parseInt(p0Match[1], 10);
+    return { hasP0: count > 0, p0Count: count };
+  }
+  // 兜底：若文中显式出现未修复的 P0 阻断描述
+  if (/\[P0\]/i.test(reportText)) {
+    return { hasP0: true, p0Count: 1 };
+  }
+  return { hasP0: false, p0Count: 0 };
+}
+
 // ==========================================
-// 3. GitHub CLI 客户端
+// 3. GitHub CLI / Status API 客户端
 // ==========================================
 
 export class GitHubClient {
+  static getHeadSha(prNumber: string): string {
+    const proc = Bun.spawnSync([
+      'gh', 'pr', 'view', prNumber,
+      '--json', 'headRefOid',
+      '--jq', '.headRefOid'
+    ]);
+    if (proc.exitCode !== 0) {
+      throw new Error(`[GitHubClient] Failed to get HEAD SHA for PR #${prNumber}: ${proc.stderr.toString()}`);
+    }
+    const sha = proc.stdout.toString().trim();
+    if (!sha) {
+      throw new Error(`[GitHubClient] Empty HEAD SHA returned for PR #${prNumber}`);
+    }
+    return sha;
+  }
+
   static getPrLabels(prNumber: string): string[] {
     const proc = Bun.spawnSync([
       'gh', 'pr', 'view', prNumber,
@@ -107,6 +94,30 @@ export class GitHubClient {
       return [];
     }
     return proc.stdout.toString().trim().split('\n').map((l) => l.trim()).filter(Boolean);
+  }
+
+  static setCommitStatus(
+    repo: string,
+    sha: string,
+    state: 'pending' | 'success' | 'failure',
+    description: string,
+    targetUrl?: string
+  ) {
+    console.log(`[GitHubClient] Setting Commit Status for ${sha.substring(0, 8)} -> ${state} (${description})`);
+    const args = [
+      'gh', 'api', `repos/${repo}/statuses/${sha}`,
+      '-X', 'POST',
+      '-f', `state=${state}`,
+      '-f', `context=${STATUS_CONTEXT}`,
+      '-f', `description=${description.substring(0, 140)}`
+    ];
+    if (targetUrl) {
+      args.push('-f', `target_url=${targetUrl}`);
+    }
+    const proc = Bun.spawnSync(args);
+    if (proc.exitCode !== 0) {
+      console.warn(`[GitHubClient] Warning: Failed to set Commit Status: ${proc.stderr.toString()}`);
+    }
   }
 
   static createPlaceholderComment(repo: string, prNumber: string): string {
@@ -122,15 +133,16 @@ export class GitHubClient {
     return proc.stdout.toString().trim();
   }
 
-  static syncLabels(prNumber: string, toAdd: string[], toRemove: string[]) {
-    for (const label of toRemove) {
-      console.log(`[GitHubClient] Removing label: ${label}`);
-      Bun.spawnSync(['gh', 'pr', 'edit', prNumber, '--remove-label', label]);
+  static getCommentBody(repo: string, commentId: string): string {
+    const proc = Bun.spawnSync([
+      'gh', 'api', `repos/${repo}/issues/comments/${commentId}`,
+      '--jq', '.body'
+    ]);
+    if (proc.exitCode !== 0) {
+      console.warn(`[GitHubClient] Warning: Failed to fetch comment body: ${proc.stderr.toString()}`);
+      return '';
     }
-    for (const label of toAdd) {
-      console.log(`[GitHubClient] Adding label: ${label}`);
-      Bun.spawnSync(['gh', 'pr', 'edit', prNumber, '--add-label', label]);
-    }
+    return proc.stdout.toString().trim();
   }
 }
 
@@ -157,7 +169,14 @@ export async function runReview() {
 
   console.log(`[CI Review] Starting Review for PR #${prNumber} in ${repo} (Event: ${eventName})`);
 
-  // 1. 获取当前 PR 标签，选择审查角色与规范
+  // 1. 获取 PR 的 HEAD Commit SHA
+  const headSha = GitHubClient.getHeadSha(prNumber);
+  const prUrl = `https://github.com/${repo}/pull/${prNumber}`;
+
+  // 2. 核心门禁锁：立即向 Commit Status API 发送 Pending，死锁 Merge 按钮与 Merge Queue
+  GitHubClient.setCommitStatus(repo, headSha, 'pending', 'AI 正在深度审查代码与架构规范...', prUrl);
+
+  // 3. 获取当前 PR 属性，选择审查角色与规范
   const initialLabels = GitHubClient.getPrLabels(prNumber);
   const isArchitecturePr = initialLabels.includes('type/architecture');
   const skillFile = isArchitecturePr
@@ -165,17 +184,11 @@ export async function runReview() {
     : '.agents/skills/code-reviewer/SKILL.md';
   const role = isArchitecturePr ? '架构与契约审查员' : 'Feature 代码审查员';
 
-  // 2. 状态机：进入 REVIEWING 状态，打上 review/in-progress 并清理旧终态标
-  let state = ReviewState.IDLE;
-  const startTransition = transition(state, { type: 'START_REVIEW' });
-  state = startTransition.nextState;
-  GitHubClient.syncLabels(prNumber, startTransition.labelsToAdd, startTransition.labelsToRemove);
-
-  // 3. 发布极简占位评论
+  // 4. 发布极简占位评论
   const commentId = GitHubClient.createPlaceholderComment(repo, prNumber);
   console.log(`[CI Review] Created placeholder comment ID: ${commentId}`);
 
-  // 4. 解析模式与模板策略
+  // 5. 解析模式与模板策略
   const mode = resolveReviewMode(eventName, commentBody);
   const strategy = REVIEW_STRATEGIES[mode];
   const hasValidSession = existsSync(sessionDir) && readdirSync(sessionDir).length > 0;
@@ -188,7 +201,7 @@ export async function runReview() {
   const dynamicPiArgs = strategy.getPiArgs(hasValidSession);
   console.log(`[CI Review] Selected mode: ${mode}, template: ${strategy.templatePath}, session reuse: ${hasValidSession}`);
 
-  // 5. 渲染 Prompt 模板
+  // 6. 渲染 Prompt 模板
   const prompt = renderPrompt(strategy.templatePath, {
     role,
     skill_file: skillFile,
@@ -199,7 +212,7 @@ export async function runReview() {
 
   console.log(`[CI Review] Running Pi CLI with model deepseek/deepseek-v4-flash...`);
 
-  // 6. 执行 Pi CLI 进行 Tool Calling 深度审查
+  // 7. 执行 Pi CLI 进行 Tool Calling 深度审查
   const piArgs = [
     'pi',
     '-p', prompt,
@@ -222,18 +235,34 @@ export async function runReview() {
     console.warn(`[CI Review] Pi CLI exited with code ${piProc.exitCode}`);
   }
 
-  // 7. 终态收敛：检测 AI 结果标签，状态机流转并自动清理 review/in-progress
-  const postReviewLabels = GitHubClient.getPrLabels(prNumber);
-  console.log(`[CI Review] Post-review labels: ${JSON.stringify(postReviewLabels)}`);
+  // 8. 读取最终覆写的审查报告并进行硬性门禁判定
+  const latestReport = GitHubClient.getCommentBody(repo, commentId);
+  const verdict = parseVerdictFromReport(latestReport);
+  console.log(`[CI Review] Final Verdict -> hasP0: ${verdict.hasP0}, p0Count: ${verdict.p0Count}`);
 
-  const endTransition = transition(state, {
-    type: 'EVALUATE_AI_VERDICT',
-    currentLabels: postReviewLabels,
-  });
-  state = endTransition.nextState;
-
-  console.log(`[CI Review] Final Review State: ${state}`);
-  GitHubClient.syncLabels(prNumber, endTransition.labelsToAdd, endTransition.labelsToRemove);
+  if (verdict.hasP0) {
+    // 发现阻断级 P0：向 Commit Status 回传 failure，物理锁死合并！
+    GitHubClient.setCommitStatus(
+      repo,
+      headSha,
+      'failure',
+      `拦截: 发现 ${verdict.p0Count} 项 P0 阻断缺陷，请修复后复核`,
+      prUrl
+    );
+    console.error(`[CI Review] Hard Gate BLOCKED: ${verdict.p0Count} P0 blockers detected.`);
+    process.exit(1);
+  } else {
+    // 审查通过（0 项 P0）：向 Commit Status 回传 success，绿灯放行合并！
+    GitHubClient.setCommitStatus(
+      repo,
+      headSha,
+      'success',
+      '通过: AI 审查通过 (0 项 P0 阻断)',
+      prUrl
+    );
+    console.log(`[CI Review] Hard Gate PASSED: No P0 blockers.`);
+    process.exit(0);
+  }
 }
 
 if (import.meta.main) {
