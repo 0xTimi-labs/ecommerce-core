@@ -174,13 +174,7 @@ jobs:
   ai-review-gate:
     name: AI Review Gate
     needs: [security-and-license, contract-lint, rust-check-and-test, frontend-check]
-    if: |
-      always() &&
-      needs.security-and-license.result == 'success' &&
-      needs.contract-lint.result == 'success' &&
-      needs.rust-check-and-test.result == 'success' &&
-      needs.frontend-check.result == 'success' &&
-      (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
+    if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
