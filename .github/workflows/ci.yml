@@ -182,11 +182,19 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Verify All Required Checks Status
+        env:
+          SECURITY_RESULT: ${{ needs.security-and-license.result }}
+          CONTRACT_RESULT: ${{ needs.contract-lint.result }}
+          RUST_RESULT: ${{ needs.rust-check-and-test.result }}
+          FRONTEND_RESULT: ${{ needs.frontend-check.result }}
         run: |
-          if ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}; then
-            echo "One or more required CI checks failed or were cancelled!"
-            exit 1
-          fi
+          echo "Security: $SECURITY_RESULT, Contract: $CONTRACT_RESULT, Rust: $RUST_RESULT, Frontend: $FRONTEND_RESULT"
+          for res in "$SECURITY_RESULT" "$CONTRACT_RESULT" "$RUST_RESULT" "$FRONTEND_RESULT"; do
+            if [ "$res" = "failure" ] || [ "$res" = "cancelled" ]; then
+              echo "One or more required CI checks failed or were cancelled!"
+              exit 1
+            fi
+          done
           echo "All required CI checks passed successfully!"
 
   ai-review-gate:
@@ -224,7 +232,7 @@ jobs:
             pi-session-${{ github.event.pull_request.number }}-
 
       - name: Configure Pi Auth
-        if: ${{ secrets.DEEPSEEK_API_KEY != '' }}
+        if: secrets.DEEPSEEK_API_KEY != ''
         env:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
         run: |
