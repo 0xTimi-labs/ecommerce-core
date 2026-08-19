@@ -16,7 +16,7 @@ permissions:
   checks: write
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: ci-${{ github.event.pull_request.number || github.event.merge_group.head_ref || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -196,21 +196,19 @@ jobs:
             fi
           done
           echo "All required CI checks passed successfully!"
+          exit 0
 
   ai-review-gate:
     name: AI Review Gate
     needs: [ci-success]
-    if: |
-      github.event_name == 'pull_request' &&
-      github.event.action == 'opened' &&
-      github.event.pull_request.draft == false
+    if: github.event_name == 'pull_request' && github.event.action == 'opened' && github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - name: Checkout PR Branch
         uses: actions/checkout@f548e57e544e1ff5a4c46bf1e1b8685f8e4a348a # v4.2.2
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: refs/pull/${{ github.event.pull_request.number }}/head
           fetch-depth: 0
 
       - name: Setup Bun Environment
@@ -221,7 +219,7 @@ jobs:
 
       - name: Install and Initialize RTK
         run: |
-          curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | sh
+          curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/v0.1.0/install.sh | sh
           echo "$HOME/.cargo/bin:$HOME/.local/bin" >> $GITHUB_PATH
           export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
           rtk init --agent pi --global
