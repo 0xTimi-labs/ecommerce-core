@@ -94,20 +94,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@f548e57e544e1ff5a4c46bf1e1b8685f8e4a348a # v4.2.2
 
-      - name: Install Buf CLI
-        run: |
-          BIN_DIR="$HOME/.local/bin"
-          mkdir -p "$BIN_DIR"
-          curl -sSL "https://github.com/bufbuild/buf/releases/latest/download/buf-Linux-x86_64" -o "$BIN_DIR/buf"
-          chmod +x "$BIN_DIR/buf"
-          echo "$BIN_DIR" >> $GITHUB_PATH
-
-      - name: Generate Code from Protobuf Contracts
-        run: |
-          if find contracts/proto -name '*.proto' 2>/dev/null | grep -q .; then
-            buf generate
-          fi
-
       - name: Install Rust Stable
         uses: dtolnay/rust-toolchain@6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772 # stable
         with:
@@ -148,20 +134,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@f548e57e544e1ff5a4c46bf1e1b8685f8e4a348a # v4.2.2
-
-      - name: Install Buf CLI
-        run: |
-          BIN_DIR="$HOME/.local/bin"
-          mkdir -p "$BIN_DIR"
-          curl -sSL "https://github.com/bufbuild/buf/releases/latest/download/buf-Linux-x86_64" -o "$BIN_DIR/buf"
-          chmod +x "$BIN_DIR/buf"
-          echo "$BIN_DIR" >> $GITHUB_PATH
-
-      - name: Generate Code from Protobuf Contracts
-        run: |
-          if find contracts/proto -name '*.proto' 2>/dev/null | grep -q .; then
-            buf generate
-          fi
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
