@@ -1,9 +1,13 @@
 use shared_kernel::PaymentId;
 use thiserror::Error;
 
-/// 支付领域错误枚举
+/// 支付领域业务错误
 #[derive(Debug, Error, PartialEq, Eq)]
 pub enum PaymentError {
+    /// 目标功能切片尚未实现 (Stage 0 骨架占位)
+    #[error("功能尚未实现: {feature} (规划于 Slice {slice})")]
+    NotImplemented { feature: &'static str, slice: u32 },
+
     #[error("非法状态流转：当前状态 [{current}] 不允许执行 [{action}]")]
     InvalidStateTransition {
         current: &'static str,

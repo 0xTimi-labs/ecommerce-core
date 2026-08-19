@@ -1,6 +1,15 @@
 [workspace]
 resolver = "3"
-members = []
+members = [
+    "crates/wire-contracts",
+    "crates/shared-kernel",
+    "crates/ordering-api",
+    "crates/ordering",
+    "crates/payment-api",
+    "crates/payment",
+    "crates/inventory-api",
+    "crates/inventory",
+]
 
 [workspace.package]
 version = "0.1.0"
