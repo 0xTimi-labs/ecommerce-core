@@ -1,0 +1,51 @@
+name: "Stage 0: 顶层架构与契约制品规格"
+description: "定义领域愿景、上下文地图、Protobuf RPC 契约、CloudEvents 模式与 BDD 业务规格"
+title: "feat(arch): [架构/契约制品名称]"
+labels: ["type/architecture", "stage/0-bootstrap"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ### 📋 Stage 0 制品定义指南
+        Stage 0 专注于顶层架构基建、全局契约网络与 BDD 验收规格定义，不包含业务实现逻辑。
+
+  - type: textarea
+    id: vision-and-context
+    attributes:
+      label: 1. 领域愿景与上下文范围 (Vision & Context)
+      description: 说明本制品覆盖的限界上下文（Ordering / Payment / Inventory）及其业务边界
+      placeholder: "描述业务背景与限界上下文定位..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: contracts-definition
+    attributes:
+      label: 2. 全局契约网络 (Protobuf & CloudEvents)
+      description: 列出新增或变更的 Protobuf RPC 服务与 CloudEvents 1.0 事件 Schema
+      placeholder: "contracts/proto/... \ncontracts/events/..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: bdd-specifications
+    attributes:
+      label: 3. BDD 业务验收规格 (Feature Specs)
+      description: 列出对应的 Cucumber Feature 规格与稳定 Scenario ID
+      placeholder: "- @scenario-order-001: 客户成功创建有效订单\n- @scenario-pay-001: 支付预授权完成..."
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: verification-checklist
+    attributes:
+      label: 4. 制品就绪门禁核对
+      options:
+        - label: "Protobuf 契约已通过 `buf lint` 与 `buf generate` 自动生成 Rust/TS 绑定"
+          required: true
+        - label: "CloudEvents 1.0 JSON Schema 已通过 Rust 原生契约集成测试"
+          required: true
+        - label: "所有 BDD Scenario 均已标注 `@ignore` 且 Cucumber Harness 100% 跑通"
+          required: true
+        - label: "所有 ADR 遵循 1-3 句话极简架构决策规范"
+          required: true
