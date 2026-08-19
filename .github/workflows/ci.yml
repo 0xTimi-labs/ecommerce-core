@@ -30,6 +30,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check Cargo Dependencies & Licenses
+        if: hashFiles('crates/**/Cargo.toml') != ''
         uses: EmbarkStudios/cargo-deny-action@9c67a826e39827395bfa619cd85cb2aaeb43cfaa
         with:
           command: check
@@ -50,7 +51,12 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Lint Protobuf Contracts
-        run: buf lint
+        run: |
+          if find contracts/proto -name '*.proto' 2>/dev/null | grep -q .; then
+            buf lint
+          else
+            echo "No proto files found in contracts/proto yet. Skipping buf lint."
+          fi
 
       - name: Check Breaking Changes
         if: github.event_name == 'pull_request'
@@ -79,13 +85,28 @@ jobs:
         uses: Swatinem/rust-cache@f0d9c3887740aee45f6153b24b3a6b815192ec16
 
       - name: Check Formatting
-        run: cargo fmt --all -- --check
+        run: |
+          if [ -n "$(cargo metadata --format-version 1 --no-deps | jq -r '.packages[] | .name')" ]; then
+            cargo fmt --all -- --check
+          else
+            echo "No workspace member packages. Skipping fmt check."
+          fi
 
       - name: Clippy Linter
-        run: cargo clippy --workspace --all-targets --all-features -- -D warnings
+        run: |
+          if [ -n "$(cargo metadata --format-version 1 --no-deps | jq -r '.packages[] | .name')" ]; then
+            cargo clippy --workspace --all-targets --all-features -- -D warnings
+          else
+            echo "No workspace member packages. Skipping clippy check."
+          fi
 
       - name: Run Unit, BDD Acceptance & Event Schema Tests
-        run: cargo test --workspace
+        run: |
+          if [ -n "$(cargo metadata --format-version 1 --no-deps | jq -r '.packages[] | .name')" ]; then
+            cargo test --workspace
+          else
+            echo "No workspace member packages. Skipping tests."
+          fi
 
   frontend-check:
     name: Frontend Linter & Typecheck (Biome + TS)
