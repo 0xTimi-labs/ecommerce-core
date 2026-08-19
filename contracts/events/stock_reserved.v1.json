@@ -1,35 +1,51 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "StockReservedV1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "StockReservedEvent",
   "type": "object",
   "required": [
     "event_id",
     "reservation_id",
     "order_id",
-    "sku_id",
-    "quantity",
+    "items",
     "occurred_at"
   ],
   "properties": {
     "event_id": {
-      "type": "string"
+      "type": "string",
+      "format": "uuid"
     },
     "reservation_id": {
-      "type": "string"
+      "type": "string",
+      "format": "uuid"
     },
     "order_id": {
-      "type": "string"
+      "type": "string",
+      "format": "uuid"
     },
-    "sku_id": {
-      "type": "string"
-    },
-    "quantity": {
-      "type": "integer",
-      "minimum": 1
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "sku_id",
+          "quantity"
+        ],
+        "properties": {
+          "sku_id": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "additionalProperties": false
+      }
     },
     "occurred_at": {
       "type": "string",
       "format": "date-time"
     }
-  }
+  },
+  "additionalProperties": false
 }

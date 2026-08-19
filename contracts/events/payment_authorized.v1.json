@@ -3,31 +3,31 @@
   "title": "PaymentAuthorizedEvent",
   "type": "object",
   "required": [
-    "eventId",
-    "paymentId",
-    "orderId",
-    "customerId",
-    "amountCents",
+    "event_id",
+    "payment_id",
+    "order_id",
+    "customer_id",
+    "amount_cents",
     "currency",
-    "occurredAt"
+    "occurred_at"
   ],
   "properties": {
-    "eventId": {
+    "event_id": {
       "type": "string",
       "format": "uuid"
     },
-    "paymentId": {
+    "payment_id": {
       "type": "string",
       "format": "uuid"
     },
-    "orderId": {
+    "order_id": {
       "type": "string",
       "format": "uuid"
     },
-    "customerId": {
+    "customer_id": {
       "type": "string"
     },
-    "amountCents": {
+    "amount_cents": {
       "type": "integer",
       "minimum": 0
     },
@@ -35,7 +35,7 @@
       "type": "string",
       "enum": ["CNY", "USD", "EUR"]
     },
-    "occurredAt": {
+    "occurred_at": {
       "type": "string",
       "format": "date-time"
     }

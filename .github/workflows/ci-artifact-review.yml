@@ -4,13 +4,10 @@ on:
   pull_request:
     types: [opened, synchronize, ready_for_review]
     branches: [main]
-    paths:
-      - 'contracts/**'
-      - 'context-map.md'
-      - 'docs/adr/**'
-      - 'docs/architecture/**'
-      - 'crates/*/tests/features/**'
-      - 'crates/*/context.md'
+
+concurrency:
+  group: artifact-review-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -19,7 +16,7 @@ permissions:
 jobs:
   artifact-review:
     name: Artifact & Contract Review (3-Axis)
-    if: github.event.pull_request.draft == false
+    if: github.event.pull_request.draft == false && startsWith(github.head_ref, 'feat/artifact-')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository

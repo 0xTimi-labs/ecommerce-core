@@ -1,3 +1,3 @@
 pub mod stock_reservation;
 
-pub use stock_reservation::ReserveStockRequest;
+pub use stock_reservation::{ReserveStockRequest, StockItem};

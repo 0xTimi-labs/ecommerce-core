@@ -3,25 +3,25 @@
   "title": "PaymentCapturedEvent",
   "type": "object",
   "required": [
-    "eventId",
-    "paymentId",
-    "orderId",
-    "occurredAt"
+    "event_id",
+    "payment_id",
+    "order_id",
+    "occurred_at"
   ],
   "properties": {
-    "eventId": {
+    "event_id": {
       "type": "string",
       "format": "uuid"
     },
-    "paymentId": {
+    "payment_id": {
       "type": "string",
       "format": "uuid"
     },
-    "orderId": {
+    "order_id": {
       "type": "string",
       "format": "uuid"
     },
-    "occurredAt": {
+    "occurred_at": {
       "type": "string",
       "format": "date-time"
     }

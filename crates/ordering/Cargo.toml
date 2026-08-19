@@ -18,5 +18,9 @@ tokio.workspace = true
 [dev-dependencies]
 cucumber.workspace = true
 
+[[test]]
+name = "acceptance"
+harness = false
+
 [lints]
 workspace = true

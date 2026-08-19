@@ -4,9 +4,10 @@ on:
   pull_request:
     types: [opened, synchronize, ready_for_review]
     branches: [main]
-    paths:
-      - 'crates/*/src/**'
-      - 'apps/**'
+
+concurrency:
+  group: code-review-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -15,7 +16,7 @@ permissions:
 jobs:
   code-review:
     name: Code & Slice Review (Dual-Axis)
-    if: github.event.pull_request.draft == false
+    if: github.event.pull_request.draft == false && !startsWith(github.head_ref, 'feat/artifact-')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
