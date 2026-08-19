@@ -1,20 +1,70 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://ecommerce-core-reference.local/events/event-envelope.v1.schema.json",
-  "title": "事件统一 envelope v1",
+  "title": "事件统一 Envelope v1",
+  "description": "全局领域事件标准信封，统一分布式追踪、因果链与时间溯源",
   "type": "object",
-  "required": ["event_id", "event_type", "event_version", "producer", "correlation_id", "causation_id", "aggregate_type", "aggregate_id", "occurred_at", "payload"],
+  "required": [
+    "event_id",
+    "event_type",
+    "event_version",
+    "producer",
+    "correlation_id",
+    "causation_id",
+    "aggregate_type",
+    "aggregate_id",
+    "occurred_at",
+    "payload"
+  ],
   "properties": {
-    "event_id": {"type": "string", "format": "uuid"},
-    "event_type": {"type": "string", "minLength": 1},
-    "event_version": {"const": 1},
-    "producer": {"type": "string", "minLength": 1},
-    "correlation_id": {"type": "string", "minLength": 1},
-    "causation_id": {"type": "string", "minLength": 1},
-    "aggregate_type": {"type": "string", "minLength": 1},
-    "aggregate_id": {"type": "string", "format": "uuid"},
-    "occurred_at": {"type": "string", "format": "date-time"},
-    "payload": {"type": "object"}
+    "event_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "事件全局唯一标识 UUID"
+    },
+    "event_type": {
+      "type": "string",
+      "minLength": 1,
+      "description": "事件类型名称（如 order_placed, payment_authorized）"
+    },
+    "event_version": {
+      "const": 1,
+      "description": "事件协议主版本号"
+    },
+    "producer": {
+      "type": "string",
+      "minLength": 1,
+      "description": "事件生产者限界上下文标识（如 ordering, payment, inventory）"
+    },
+    "correlation_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "分布式关联追踪标识"
+    },
+    "causation_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "触发本事件的直接前序原因标识"
+    },
+    "aggregate_type": {
+      "type": "string",
+      "minLength": 1,
+      "description": "所属聚合根类型（如 Order, Payment, StockReservation）"
+    },
+    "aggregate_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "所属聚合根唯一标识 UUID"
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "事件发生时间（ISO 8601 UTC 格式）"
+    },
+    "payload": {
+      "type": "object",
+      "description": "事件业务载荷对象"
+    }
   },
   "additionalProperties": false
 }

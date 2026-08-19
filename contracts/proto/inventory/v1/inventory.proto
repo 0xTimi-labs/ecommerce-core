@@ -2,40 +2,64 @@ syntax = "proto3";
 
 package inventory.v1;
 
+// 库存服务 RPC 契约
 service InventoryService {
+  // 预留实物库存（高并发原子防超卖）
   rpc Reserve(ReserveRequest) returns (ReserveResponse);
+  // 释放预留库存（超时未付或订单取消补偿）
   rpc Release(ReleaseRequest) returns (ReleaseResponse);
 }
 
+// 预留库存行项
 message ReservationLine {
+  // 商品 SKU 标识
   string sku_id = 1;
+  // 预留数量
   uint32 quantity = 2;
 }
 
+// 预留库存请求
 message ReserveRequest {
+  // 关联订单标识
   string order_id = 1;
+  // 预留商品列表
   repeated ReservationLine lines = 2;
+  // 幂等请求键
   string idempotency_key = 3;
 }
 
+// 预留库存响应
 message ReserveResponse {
+  // 库存预留流水标识
   string reservation_id = 1;
+  // 预留执行状态
   ReservationStatus status = 2;
 }
 
+// 释放库存请求
 message ReleaseRequest {
+  // 目标库存预留流水标识
   string reservation_id = 1;
+  // 幂等请求键
   string idempotency_key = 2;
 }
 
+// 释放库存响应
 message ReleaseResponse {
+  // 释放的目标预留流水标识
   string reservation_id = 1;
+  // 释放后预留状态
   ReservationStatus status = 2;
 }
 
+// 库存预留状态枚举
 enum ReservationStatus {
+  // 未指定状态
   RESERVATION_STATUS_UNSPECIFIED = 0;
+  // 预留成功（库存已锁定）
   RESERVATION_STATUS_RESERVED = 1;
+  // 预留被拒绝（库存不足）
   RESERVATION_STATUS_REJECTED = 2;
+  // 预留已释放（库存已归还）
   RESERVATION_STATUS_RELEASED = 3;
 }

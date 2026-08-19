@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://ecommerce-core-reference.local/events/stock-reserved.v1.schema.json",
   "title": "StockReserved v1",
+  "description": "实物库存成功原子锁定事实，代表商品具备履约库存保障",
   "allOf": [
     {
       "$ref": "event-envelope.v1.schema.json"
@@ -23,11 +24,13 @@
       "properties": {
         "reservation_id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "description": "库存预留流水唯一标识 UUID"
         },
         "order_id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "description": "关联订单唯一标识 UUID"
         }
       },
       "additionalProperties": false

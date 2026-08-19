@@ -13,15 +13,21 @@ export const file_payment_v1_payment: GenFile = /*@__PURE__*/
   fileDesc("ChhwYXltZW50L3YxL3BheW1lbnQucHJvdG8SCnBheW1lbnQudjEiLwoFTW9uZXkSFAoMYW1vdW50X21pbm9yGAEgASgDEhAKCGN1cnJlbmN5GAIgASgJImkKEEF1dGhvcml6ZVJlcXVlc3QSEAoIb3JkZXJfaWQYASABKAkSKgoPYWNjZXB0ZWRfYW1vdW50GAIgASgLMhEucGF5bWVudC52MS5Nb25leRIXCg9pZGVtcG90ZW5jeV9rZXkYAyABKAkicgoRQXV0aG9yaXplUmVzcG9uc2USEgoKcGF5bWVudF9pZBgBIAEoCRIYChBhdXRob3JpemF0aW9uX2lkGAIgASgJEi8KBnN0YXR1cxgDIAEoDjIfLnBheW1lbnQudjEuQXV0aG9yaXphdGlvblN0YXR1cyJXCg5DYXB0dXJlUmVxdWVzdBISCgpwYXltZW50X2lkGAEgASgJEhgKEGF1dGhvcml6YXRpb25faWQYAiABKAkSFwoPaWRlbXBvdGVuY3lfa2V5GAMgASgJImQKD0NhcHR1cmVSZXNwb25zZRISCgpwYXltZW50X2lkGAEgASgJEhIKCmNhcHR1cmVfaWQYAiABKAkSKQoGc3RhdHVzGAMgASgOMhkucGF5bWVudC52MS5DYXB0dXJlU3RhdHVzImEKGFZvaWRBdXRob3JpemF0aW9uUmVxdWVzdBISCgpwYXltZW50X2lkGAEgASgJEhgKEGF1dGhvcml6YXRpb25faWQYAiABKAkSFwoPaWRlbXBvdGVuY3lfa2V5GAMgASgJImAKGVZvaWRBdXRob3JpemF0aW9uUmVzcG9uc2USEgoKcGF5bWVudF9pZBgBIAEoCRIvCgZzdGF0dXMYAiABKA4yHy5wYXltZW50LnYxLkF1dGhvcml6YXRpb25TdGF0dXMicwoNUmVmdW5kUmVxdWVzdBISCgpwYXltZW50X2lkGAEgASgJEhIKCmNhcHR1cmVfaWQYAiABKAkSIQoGYW1vdW50GAMgASgLMhEucGF5bWVudC52MS5Nb25leRIXCg9pZGVtcG90ZW5jeV9rZXkYBCABKAkiYQoOUmVmdW5kUmVzcG9uc2USEgoKcGF5bWVudF9pZBgBIAEoCRIRCglyZWZ1bmRfaWQYAiABKAkSKAoGc3RhdHVzGAMgASgOMhgucGF5bWVudC52MS5SZWZ1bmRTdGF0dXMqpAEKE0F1dGhvcml6YXRpb25TdGF0dXMSJAogQVVUSE9SSVpBVElPTl9TVEFUVVNfVU5TUEVDSUZJRUQQABIjCh9BVVRIT1JJWkFUSU9OX1NUQVRVU19BVVRIT1JJWkVEEAESHwobQVVUSE9SSVpBVElPTl9TVEFUVVNfVk9JREVEEAISIQodQVVUSE9SSVpBVElPTl9TVEFUVVNfREVDTElORUQQAypnCg1DYXB0dXJlU3RhdHVzEh4KGkNBUFRVUkVfU1RBVFVTX1VOU1BFQ0lGSUVEEAASGwoXQ0FQVFVSRV9TVEFUVVNfQ0FQVFVSRUQQARIZChVDQVBUVVJFX1NUQVRVU19GQUlMRUQQAipjCgxSZWZ1bmRTdGF0dXMSHQoZUkVGVU5EX1NUQVRVU19VTlNQRUNJRklFRBAAEhoKFlJFRlVORF9TVEFUVVNfUkVGVU5ERUQQARIYChRSRUZVTkRfU1RBVFVTX0ZBSUxFRBACMsECCg5QYXltZW50U2VydmljZRJICglBdXRob3JpemUSHC5wYXltZW50LnYxLkF1dGhvcml6ZVJlcXVlc3QaHS5wYXltZW50LnYxLkF1dGhvcml6ZVJlc3BvbnNlEkIKB0NhcHR1cmUSGi5wYXltZW50LnYxLkNhcHR1cmVSZXF1ZXN0GhsucGF5bWVudC52MS5DYXB0dXJlUmVzcG9uc2USYAoRVm9pZEF1dGhvcml6YXRpb24SJC5wYXltZW50LnYxLlZvaWRBdXRob3JpemF0aW9uUmVxdWVzdBolLnBheW1lbnQudjEuVm9pZEF1dGhvcml6YXRpb25SZXNwb25zZRI/CgZSZWZ1bmQSGS5wYXltZW50LnYxLlJlZnVuZFJlcXVlc3QaGi5wYXltZW50LnYxLlJlZnVuZFJlc3BvbnNlYgZwcm90bzM");
 
 /**
+ * 货币金额类型
+ *
  * @generated from message payment.v1.Money
  */
 export type Money = Message<"payment.v1.Money"> & {
   /**
+   * 最小货币单位数值（如分、美分）
+   *
    * @generated from field: int64 amount_minor = 1;
    */
   amountMinor: bigint;
 
   /**
+   * ISO 4217 三位货币代码（如 CNY, USD）
+   *
    * @generated from field: string currency = 2;
    */
   currency: string;
@@ -35,20 +41,28 @@ export const MoneySchema: GenMessage<Money> = /*@__PURE__*/
   messageDesc(file_payment_v1_payment, 0);
 
 /**
+ * 支付预授权请求
+ *
  * @generated from message payment.v1.AuthorizeRequest
  */
 export type AuthorizeRequest = Message<"payment.v1.AuthorizeRequest"> & {
   /**
+   * 关联订单标识
+   *
    * @generated from field: string order_id = 1;
    */
   orderId: string;
 
   /**
+   * 需授权的金额
+   *
    * @generated from field: payment.v1.Money accepted_amount = 2;
    */
   acceptedAmount?: Money | undefined;
 
   /**
+   * 幂等请求键
+   *
    * @generated from field: string idempotency_key = 3;
    */
   idempotencyKey: string;
@@ -62,20 +76,28 @@ export const AuthorizeRequestSchema: GenMessage<AuthorizeRequest> = /*@__PURE__*
   messageDesc(file_payment_v1_payment, 1);
 
 /**
+ * 支付预授权响应
+ *
  * @generated from message payment.v1.AuthorizeResponse
  */
 export type AuthorizeResponse = Message<"payment.v1.AuthorizeResponse"> & {
   /**
+   * 支付单唯一标识
+   *
    * @generated from field: string payment_id = 1;
    */
   paymentId: string;
 
   /**
+   * 授权流水凭据标识
+   *
    * @generated from field: string authorization_id = 2;
    */
   authorizationId: string;
 
   /**
+   * 授权执行状态
+   *
    * @generated from field: payment.v1.AuthorizationStatus status = 3;
    */
   status: AuthorizationStatus;
@@ -89,20 +111,28 @@ export const AuthorizeResponseSchema: GenMessage<AuthorizeResponse> = /*@__PURE_
   messageDesc(file_payment_v1_payment, 2);
 
 /**
+ * 支付请款请求
+ *
  * @generated from message payment.v1.CaptureRequest
  */
 export type CaptureRequest = Message<"payment.v1.CaptureRequest"> & {
   /**
+   * 支付单唯一标识
+   *
    * @generated from field: string payment_id = 1;
    */
   paymentId: string;
 
   /**
+   * 对应的授权流水标识
+   *
    * @generated from field: string authorization_id = 2;
    */
   authorizationId: string;
 
   /**
+   * 幂等请求键
+   *
    * @generated from field: string idempotency_key = 3;
    */
   idempotencyKey: string;
@@ -116,20 +146,28 @@ export const CaptureRequestSchema: GenMessage<CaptureRequest> = /*@__PURE__*/
   messageDesc(file_payment_v1_payment, 3);
 
 /**
+ * 支付请款响应
+ *
  * @generated from message payment.v1.CaptureResponse
  */
 export type CaptureResponse = Message<"payment.v1.CaptureResponse"> & {
   /**
+   * 支付单唯一标识
+   *
    * @generated from field: string payment_id = 1;
    */
   paymentId: string;
 
   /**
+   * 请款结算凭据标识
+   *
    * @generated from field: string capture_id = 2;
    */
   captureId: string;
 
   /**
+   * 请款执行状态
+   *
    * @generated from field: payment.v1.CaptureStatus status = 3;
    */
   status: CaptureStatus;
@@ -143,20 +181,28 @@ export const CaptureResponseSchema: GenMessage<CaptureResponse> = /*@__PURE__*/
   messageDesc(file_payment_v1_payment, 4);
 
 /**
+ * 撤销预授权请求
+ *
  * @generated from message payment.v1.VoidAuthorizationRequest
  */
 export type VoidAuthorizationRequest = Message<"payment.v1.VoidAuthorizationRequest"> & {
   /**
+   * 支付单唯一标识
+   *
    * @generated from field: string payment_id = 1;
    */
   paymentId: string;
 
   /**
+   * 对应的授权流水标识
+   *
    * @generated from field: string authorization_id = 2;
    */
   authorizationId: string;
 
   /**
+   * 幂等请求键
+   *
    * @generated from field: string idempotency_key = 3;
    */
   idempotencyKey: string;
@@ -170,15 +216,21 @@ export const VoidAuthorizationRequestSchema: GenMessage<VoidAuthorizationRequest
   messageDesc(file_payment_v1_payment, 5);
 
 /**
+ * 撤销预授权响应
+ *
  * @generated from message payment.v1.VoidAuthorizationResponse
  */
 export type VoidAuthorizationResponse = Message<"payment.v1.VoidAuthorizationResponse"> & {
   /**
+   * 支付单唯一标识
+   *
    * @generated from field: string payment_id = 1;
    */
   paymentId: string;
 
   /**
+   * 授权撤销后状态
+   *
    * @generated from field: payment.v1.AuthorizationStatus status = 2;
    */
   status: AuthorizationStatus;
@@ -192,25 +244,35 @@ export const VoidAuthorizationResponseSchema: GenMessage<VoidAuthorizationRespon
   messageDesc(file_payment_v1_payment, 6);
 
 /**
+ * 退款请求
+ *
  * @generated from message payment.v1.RefundRequest
  */
 export type RefundRequest = Message<"payment.v1.RefundRequest"> & {
   /**
+   * 支付单唯一标识
+   *
    * @generated from field: string payment_id = 1;
    */
   paymentId: string;
 
   /**
+   * 关联的请款结算标识
+   *
    * @generated from field: string capture_id = 2;
    */
   captureId: string;
 
   /**
+   * 退款金额
+   *
    * @generated from field: payment.v1.Money amount = 3;
    */
   amount?: Money | undefined;
 
   /**
+   * 幂等请求键
+   *
    * @generated from field: string idempotency_key = 4;
    */
   idempotencyKey: string;
@@ -224,20 +286,28 @@ export const RefundRequestSchema: GenMessage<RefundRequest> = /*@__PURE__*/
   messageDesc(file_payment_v1_payment, 7);
 
 /**
+ * 退款响应
+ *
  * @generated from message payment.v1.RefundResponse
  */
 export type RefundResponse = Message<"payment.v1.RefundResponse"> & {
   /**
+   * 支付单唯一标识
+   *
    * @generated from field: string payment_id = 1;
    */
   paymentId: string;
 
   /**
+   * 退款凭据标识
+   *
    * @generated from field: string refund_id = 2;
    */
   refundId: string;
 
   /**
+   * 退款执行状态
+   *
    * @generated from field: payment.v1.RefundStatus status = 3;
    */
   status: RefundStatus;
@@ -251,25 +321,35 @@ export const RefundResponseSchema: GenMessage<RefundResponse> = /*@__PURE__*/
   messageDesc(file_payment_v1_payment, 8);
 
 /**
+ * 授权状态枚举
+ *
  * @generated from enum payment.v1.AuthorizationStatus
  */
 export enum AuthorizationStatus {
   /**
+   * 未指定状态
+   *
    * @generated from enum value: AUTHORIZATION_STATUS_UNSPECIFIED = 0;
    */
   UNSPECIFIED = 0,
 
   /**
+   * 预授权成功（额度已冻结）
+   *
    * @generated from enum value: AUTHORIZATION_STATUS_AUTHORIZED = 1;
    */
   AUTHORIZED = 1,
 
   /**
+   * 预授权已撤销
+   *
    * @generated from enum value: AUTHORIZATION_STATUS_VOIDED = 2;
    */
   VOIDED = 2,
 
   /**
+   * 预授权被拒绝
+   *
    * @generated from enum value: AUTHORIZATION_STATUS_DECLINED = 3;
    */
   DECLINED = 3,
@@ -282,20 +362,28 @@ export const AuthorizationStatusSchema: GenEnum<AuthorizationStatus> = /*@__PURE
   enumDesc(file_payment_v1_payment, 0);
 
 /**
+ * 请款结算状态枚举
+ *
  * @generated from enum payment.v1.CaptureStatus
  */
 export enum CaptureStatus {
   /**
+   * 未指定状态
+   *
    * @generated from enum value: CAPTURE_STATUS_UNSPECIFIED = 0;
    */
   UNSPECIFIED = 0,
 
   /**
+   * 请款成功（资金已划转）
+   *
    * @generated from enum value: CAPTURE_STATUS_CAPTURED = 1;
    */
   CAPTURED = 1,
 
   /**
+   * 请款失败
+   *
    * @generated from enum value: CAPTURE_STATUS_FAILED = 2;
    */
   FAILED = 2,
@@ -308,20 +396,28 @@ export const CaptureStatusSchema: GenEnum<CaptureStatus> = /*@__PURE__*/
   enumDesc(file_payment_v1_payment, 1);
 
 /**
+ * 退款状态枚举
+ *
  * @generated from enum payment.v1.RefundStatus
  */
 export enum RefundStatus {
   /**
+   * 未指定状态
+   *
    * @generated from enum value: REFUND_STATUS_UNSPECIFIED = 0;
    */
   UNSPECIFIED = 0,
 
   /**
+   * 退款成功
+   *
    * @generated from enum value: REFUND_STATUS_REFUNDED = 1;
    */
   REFUNDED = 1,
 
   /**
+   * 退款失败
+   *
    * @generated from enum value: REFUND_STATUS_FAILED = 2;
    */
   FAILED = 2,
@@ -334,10 +430,14 @@ export const RefundStatusSchema: GenEnum<RefundStatus> = /*@__PURE__*/
   enumDesc(file_payment_v1_payment, 2);
 
 /**
+ * 支付服务 RPC 契约
+ *
  * @generated from service payment.v1.PaymentService
  */
 export const PaymentService: GenService<{
   /**
+   * 发起两阶段支付预授权（冻结额度）
+   *
    * @generated from rpc payment.v1.PaymentService.Authorize
    */
   authorize: {
@@ -346,6 +446,8 @@ export const PaymentService: GenService<{
     output: typeof AuthorizeResponseSchema;
   },
   /**
+   * 执行支付请款（资金划转结算）
+   *
    * @generated from rpc payment.v1.PaymentService.Capture
    */
   capture: {
@@ -354,6 +456,8 @@ export const PaymentService: GenService<{
     output: typeof CaptureResponseSchema;
   },
   /**
+   * 撤销未结算预授权
+   *
    * @generated from rpc payment.v1.PaymentService.VoidAuthorization
    */
   voidAuthorization: {
@@ -362,6 +466,8 @@ export const PaymentService: GenService<{
     output: typeof VoidAuthorizationResponseSchema;
   },
   /**
+   * 发起交易退款
+   *
    * @generated from rpc payment.v1.PaymentService.Refund
    */
   refund: {

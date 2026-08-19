@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://ecommerce-core-reference.local/events/order-placed.v1.schema.json",
   "title": "OrderPlaced v1",
+  "description": "客户成功提交订单事实；包含权威报价单引用与总金额，用于触发下游库存预留与支付初始化",
   "allOf": [
     {
       "$ref": "event-envelope.v1.schema.json"
@@ -26,23 +27,28 @@
       "properties": {
         "order_id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "description": "订单全局唯一标识 UUID"
         },
         "quote_id": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "description": "权威价格报价单标识"
         },
         "quote_version": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "description": "报价单版本号"
         },
         "total_amount_minor": {
           "type": "integer",
-          "minimum": 0
+          "minimum": 0,
+          "description": "订单总金额（最小货币单位，如分）"
         },
         "currency": {
           "type": "string",
-          "pattern": "^[A-Z]{3}$"
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 三位货币代码"
         }
       },
       "additionalProperties": false

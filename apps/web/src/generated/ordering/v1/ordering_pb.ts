@@ -13,15 +13,21 @@ export const file_ordering_v1_ordering: GenFile = /*@__PURE__*/
   fileDesc("ChpvcmRlcmluZy92MS9vcmRlcmluZy5wcm90bxILb3JkZXJpbmcudjEiOQoOUXVvdGVSZWZlcmVuY2USEAoIcXVvdGVfaWQYASABKAkSFQoNcXVvdGVfdmVyc2lvbhgCIAEoCSIyCg5PcmRlckxpbmVJbnB1dBIOCgZza3VfaWQYASABKAkSEAoIcXVhbnRpdHkYAiABKA0ipAEKEkNyZWF0ZU9yZGVyUmVxdWVzdBITCgtjdXN0b21lcl9pZBgBIAEoCRIqCgVsaW5lcxgCIAMoCzIbLm9yZGVyaW5nLnYxLk9yZGVyTGluZUlucHV0EjQKD3F1b3RlX3JlZmVyZW5jZRgDIAEoCzIbLm9yZGVyaW5nLnYxLlF1b3RlUmVmZXJlbmNlEhcKD2lkZW1wb3RlbmN5X2tleRgEIAEoCSJRChNDcmVhdGVPcmRlclJlc3BvbnNlEhAKCG9yZGVyX2lkGAEgASgJEigKBnN0YXR1cxgCIAEoDjIYLm9yZGVyaW5nLnYxLk9yZGVyU3RhdHVzIiMKD0dldE9yZGVyUmVxdWVzdBIQCghvcmRlcl9pZBgBIAEoCSJOChBHZXRPcmRlclJlc3BvbnNlEhAKCG9yZGVyX2lkGAEgASgJEigKBnN0YXR1cxgCIAEoDjIYLm9yZGVyaW5nLnYxLk9yZGVyU3RhdHVzKncKC09yZGVyU3RhdHVzEhwKGE9SREVSX1NUQVRVU19VTlNQRUNJRklFRBAAEhcKE09SREVSX1NUQVRVU19QTEFDRUQQARIVChFPUkRFUl9TVEFUVVNfUEFJRBACEhoKFk9SREVSX1NUQVRVU19DQU5DRUxMRUQQAzKsAQoPT3JkZXJpbmdTZXJ2aWNlElAKC0NyZWF0ZU9yZGVyEh8ub3JkZXJpbmcudjEuQ3JlYXRlT3JkZXJSZXF1ZXN0GiAub3JkZXJpbmcudjEuQ3JlYXRlT3JkZXJSZXNwb25zZRJHCghHZXRPcmRlchIcLm9yZGVyaW5nLnYxLkdldE9yZGVyUmVxdWVzdBodLm9yZGVyaW5nLnYxLkdldE9yZGVyUmVzcG9uc2ViBnByb3RvMw");
 
 /**
+ * 报价引用快照（防篡改与价格溯源）
+ *
  * @generated from message ordering.v1.QuoteReference
  */
 export type QuoteReference = Message<"ordering.v1.QuoteReference"> & {
   /**
+   * 报价单全局唯一标识
+   *
    * @generated from field: string quote_id = 1;
    */
   quoteId: string;
 
   /**
+   * 报价版本号
+   *
    * @generated from field: string quote_version = 2;
    */
   quoteVersion: string;
@@ -35,15 +41,21 @@ export const QuoteReferenceSchema: GenMessage<QuoteReference> = /*@__PURE__*/
   messageDesc(file_ordering_v1_ordering, 0);
 
 /**
+ * 订单项下单输入参数（客户端仅传 SKU 与数量，禁止传单价）
+ *
  * @generated from message ordering.v1.OrderLineInput
  */
 export type OrderLineInput = Message<"ordering.v1.OrderLineInput"> & {
   /**
+   * 商品 SKU 标识
+   *
    * @generated from field: string sku_id = 1;
    */
   skuId: string;
 
   /**
+   * 购买数量
+   *
    * @generated from field: uint32 quantity = 2;
    */
   quantity: number;
@@ -57,25 +69,35 @@ export const OrderLineInputSchema: GenMessage<OrderLineInput> = /*@__PURE__*/
   messageDesc(file_ordering_v1_ordering, 1);
 
 /**
+ * 创建订单请求
+ *
  * @generated from message ordering.v1.CreateOrderRequest
  */
 export type CreateOrderRequest = Message<"ordering.v1.CreateOrderRequest"> & {
   /**
+   * 下单客户标识
+   *
    * @generated from field: string customer_id = 1;
    */
   customerId: string;
 
   /**
+   * 下单商品条目列表
+   *
    * @generated from field: repeated ordering.v1.OrderLineInput lines = 2;
    */
   lines: OrderLineInput[];
 
   /**
+   * 权威报价单引用
+   *
    * @generated from field: ordering.v1.QuoteReference quote_reference = 3;
    */
   quoteReference?: QuoteReference | undefined;
 
   /**
+   * 幂等请求键
+   *
    * @generated from field: string idempotency_key = 4;
    */
   idempotencyKey: string;
@@ -89,15 +111,21 @@ export const CreateOrderRequestSchema: GenMessage<CreateOrderRequest> = /*@__PUR
   messageDesc(file_ordering_v1_ordering, 2);
 
 /**
+ * 创建订单响应
+ *
  * @generated from message ordering.v1.CreateOrderResponse
  */
 export type CreateOrderResponse = Message<"ordering.v1.CreateOrderResponse"> & {
   /**
+   * 生成的订单唯一标识
+   *
    * @generated from field: string order_id = 1;
    */
   orderId: string;
 
   /**
+   * 订单初始状态
+   *
    * @generated from field: ordering.v1.OrderStatus status = 2;
    */
   status: OrderStatus;
@@ -111,10 +139,14 @@ export const CreateOrderResponseSchema: GenMessage<CreateOrderResponse> = /*@__P
   messageDesc(file_ordering_v1_ordering, 3);
 
 /**
+ * 查询订单请求
+ *
  * @generated from message ordering.v1.GetOrderRequest
  */
 export type GetOrderRequest = Message<"ordering.v1.GetOrderRequest"> & {
   /**
+   * 目标订单标识
+   *
    * @generated from field: string order_id = 1;
    */
   orderId: string;
@@ -128,15 +160,21 @@ export const GetOrderRequestSchema: GenMessage<GetOrderRequest> = /*@__PURE__*/
   messageDesc(file_ordering_v1_ordering, 4);
 
 /**
+ * 查询订单响应
+ *
  * @generated from message ordering.v1.GetOrderResponse
  */
 export type GetOrderResponse = Message<"ordering.v1.GetOrderResponse"> & {
   /**
+   * 订单唯一标识
+   *
    * @generated from field: string order_id = 1;
    */
   orderId: string;
 
   /**
+   * 当前订单状态
+   *
    * @generated from field: ordering.v1.OrderStatus status = 2;
    */
   status: OrderStatus;
@@ -150,25 +188,35 @@ export const GetOrderResponseSchema: GenMessage<GetOrderResponse> = /*@__PURE__*
   messageDesc(file_ordering_v1_ordering, 5);
 
 /**
+ * 订单流转状态枚举
+ *
  * @generated from enum ordering.v1.OrderStatus
  */
 export enum OrderStatus {
   /**
+   * 未指定状态
+   *
    * @generated from enum value: ORDER_STATUS_UNSPECIFIED = 0;
    */
   UNSPECIFIED = 0,
 
   /**
+   * 已下单待推进
+   *
    * @generated from enum value: ORDER_STATUS_PLACED = 1;
    */
   PLACED = 1,
 
   /**
+   * 已支付完成
+   *
    * @generated from enum value: ORDER_STATUS_PAID = 2;
    */
   PAID = 2,
 
   /**
+   * 已取消
+   *
    * @generated from enum value: ORDER_STATUS_CANCELLED = 3;
    */
   CANCELLED = 3,
@@ -181,10 +229,14 @@ export const OrderStatusSchema: GenEnum<OrderStatus> = /*@__PURE__*/
   enumDesc(file_ordering_v1_ordering, 0);
 
 /**
+ * 订单服务 RPC 契约
+ *
  * @generated from service ordering.v1.OrderingService
  */
 export const OrderingService: GenService<{
   /**
+   * 创建订单（由服务端权威计算金额并校验幂等性）
+   *
    * @generated from rpc ordering.v1.OrderingService.CreateOrder
    */
   createOrder: {
@@ -193,6 +245,8 @@ export const OrderingService: GenService<{
     output: typeof CreateOrderResponseSchema;
   },
   /**
+   * 获取订单详情与状态
+   *
    * @generated from rpc ordering.v1.OrderingService.GetOrder
    */
   getOrder: {

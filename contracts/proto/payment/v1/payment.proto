@@ -2,81 +2,134 @@ syntax = "proto3";
 
 package payment.v1;
 
+// 支付服务 RPC 契约
 service PaymentService {
+  // 发起两阶段支付预授权（冻结额度）
   rpc Authorize(AuthorizeRequest) returns (AuthorizeResponse);
+  // 执行支付请款（资金划转结算）
   rpc Capture(CaptureRequest) returns (CaptureResponse);
+  // 撤销未结算预授权
   rpc VoidAuthorization(VoidAuthorizationRequest) returns (VoidAuthorizationResponse);
+  // 发起交易退款
   rpc Refund(RefundRequest) returns (RefundResponse);
 }
 
+// 货币金额类型
 message Money {
+  // 最小货币单位数值（如分、美分）
   int64 amount_minor = 1;
+  // ISO 4217 三位货币代码（如 CNY, USD）
   string currency = 2;
 }
 
+// 支付预授权请求
 message AuthorizeRequest {
+  // 关联订单标识
   string order_id = 1;
+  // 需授权的金额
   Money accepted_amount = 2;
+  // 幂等请求键
   string idempotency_key = 3;
 }
 
+// 支付预授权响应
 message AuthorizeResponse {
+  // 支付单唯一标识
   string payment_id = 1;
+  // 授权流水凭据标识
   string authorization_id = 2;
+  // 授权执行状态
   AuthorizationStatus status = 3;
 }
 
+// 支付请款请求
 message CaptureRequest {
+  // 支付单唯一标识
   string payment_id = 1;
+  // 对应的授权流水标识
   string authorization_id = 2;
+  // 幂等请求键
   string idempotency_key = 3;
 }
 
+// 支付请款响应
 message CaptureResponse {
+  // 支付单唯一标识
   string payment_id = 1;
+  // 请款结算凭据标识
   string capture_id = 2;
+  // 请款执行状态
   CaptureStatus status = 3;
 }
 
+// 撤销预授权请求
 message VoidAuthorizationRequest {
+  // 支付单唯一标识
   string payment_id = 1;
+  // 对应的授权流水标识
   string authorization_id = 2;
+  // 幂等请求键
   string idempotency_key = 3;
 }
 
+// 撤销预授权响应
 message VoidAuthorizationResponse {
+  // 支付单唯一标识
   string payment_id = 1;
+  // 授权撤销后状态
   AuthorizationStatus status = 2;
 }
 
+// 退款请求
 message RefundRequest {
+  // 支付单唯一标识
   string payment_id = 1;
+  // 关联的请款结算标识
   string capture_id = 2;
+  // 退款金额
   Money amount = 3;
+  // 幂等请求键
   string idempotency_key = 4;
 }
 
+// 退款响应
 message RefundResponse {
+  // 支付单唯一标识
   string payment_id = 1;
+  // 退款凭据标识
   string refund_id = 2;
+  // 退款执行状态
   RefundStatus status = 3;
 }
 
+// 授权状态枚举
 enum AuthorizationStatus {
+  // 未指定状态
   AUTHORIZATION_STATUS_UNSPECIFIED = 0;
+  // 预授权成功（额度已冻结）
   AUTHORIZATION_STATUS_AUTHORIZED = 1;
+  // 预授权已撤销
   AUTHORIZATION_STATUS_VOIDED = 2;
+  // 预授权被拒绝
   AUTHORIZATION_STATUS_DECLINED = 3;
 }
 
+// 请款结算状态枚举
 enum CaptureStatus {
+  // 未指定状态
   CAPTURE_STATUS_UNSPECIFIED = 0;
+  // 请款成功（资金已划转）
   CAPTURE_STATUS_CAPTURED = 1;
+  // 请款失败
   CAPTURE_STATUS_FAILED = 2;
 }
 
+// 退款状态枚举
 enum RefundStatus {
+  // 未指定状态
   REFUND_STATUS_UNSPECIFIED = 0;
+  // 退款成功
   REFUND_STATUS_REFUNDED = 1;
+  // 退款失败
   REFUND_STATUS_FAILED = 2;
 }

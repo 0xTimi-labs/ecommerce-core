@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://ecommerce-core-reference.local/events/payment-authorized.v1.schema.json",
   "title": "PaymentAuthorized v1",
-  "description": "资金冻结事实，不表示 Order 已付款",
+  "description": "资金额度冻结事实，代表交易资金具备履约保障",
   "allOf": [
     {
       "$ref": "event-envelope.v1.schema.json"
@@ -27,23 +27,28 @@
       "properties": {
         "payment_id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "description": "支付单唯一标识 UUID"
         },
         "authorization_id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "description": "支付预授权凭据流水标识 UUID"
         },
         "order_id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "description": "关联订单唯一标识 UUID"
         },
         "amount_minor": {
           "type": "integer",
-          "minimum": 0
+          "minimum": 0,
+          "description": "预授权金额（最小货币单位，如分）"
         },
         "currency": {
           "type": "string",
-          "pattern": "^[A-Z]{3}$"
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 三位货币代码"
         }
       },
       "additionalProperties": false

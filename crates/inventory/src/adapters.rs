@@ -1,1 +1,3 @@
-//! 库存上下文适配器实现
+pub mod in_memory_repository;
+
+pub use in_memory_repository::InMemoryInventoryRepository;

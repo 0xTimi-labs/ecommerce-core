@@ -2,45 +2,72 @@ syntax = "proto3";
 
 package ordering.v1;
 
+// 订单服务 RPC 契约
 service OrderingService {
+  // 创建订单（由服务端权威计算金额并校验幂等性）
   rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse);
+  // 获取订单详情与状态
   rpc GetOrder(GetOrderRequest) returns (GetOrderResponse);
 }
 
+// 报价引用快照（防篡改与价格溯源）
 message QuoteReference {
+  // 报价单全局唯一标识
   string quote_id = 1;
+  // 报价版本号
   string quote_version = 2;
 }
 
+// 订单项下单输入参数（客户端仅传 SKU 与数量，禁止传单价）
 message OrderLineInput {
+  // 商品 SKU 标识
   string sku_id = 1;
+  // 购买数量
   uint32 quantity = 2;
 }
 
+// 创建订单请求
 message CreateOrderRequest {
+  // 下单客户标识
   string customer_id = 1;
+  // 下单商品条目列表
   repeated OrderLineInput lines = 2;
+  // 权威报价单引用
   QuoteReference quote_reference = 3;
+  // 幂等请求键
   string idempotency_key = 4;
 }
 
+// 创建订单响应
 message CreateOrderResponse {
+  // 生成的订单唯一标识
   string order_id = 1;
+  // 订单初始状态
   OrderStatus status = 2;
 }
 
+// 查询订单请求
 message GetOrderRequest {
+  // 目标订单标识
   string order_id = 1;
 }
 
+// 查询订单响应
 message GetOrderResponse {
+  // 订单唯一标识
   string order_id = 1;
+  // 当前订单状态
   OrderStatus status = 2;
 }
 
+// 订单流转状态枚举
 enum OrderStatus {
+  // 未指定状态
   ORDER_STATUS_UNSPECIFIED = 0;
+  // 已下单待推进
   ORDER_STATUS_PLACED = 1;
+  // 已支付完成
   ORDER_STATUS_PAID = 2;
+  // 已取消
   ORDER_STATUS_CANCELLED = 3;
 }

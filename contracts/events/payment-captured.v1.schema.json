@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://ecommerce-core-reference.local/events/payment-captured.v1.schema.json",
   "title": "PaymentCaptured v1",
-  "description": "实际扣款事实；未来获批 Ordering Slice 才可据此推进 Paid",
+  "description": "实际资金清算扣款完成事实，用于财务对账并推进订单进入已支付状态",
   "allOf": [
     {
       "$ref": "event-envelope.v1.schema.json"
@@ -27,23 +27,28 @@
       "properties": {
         "payment_id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "description": "支付单唯一标识 UUID"
         },
         "capture_id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "description": "请款结算凭据流水标识 UUID"
         },
         "order_id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "description": "关联订单唯一标识 UUID"
         },
         "amount_minor": {
           "type": "integer",
-          "minimum": 0
+          "minimum": 0,
+          "description": "请款结算金额（最小货币单位，如分）"
         },
         "currency": {
           "type": "string",
-          "pattern": "^[A-Z]{3}$"
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 三位货币代码"
         }
       },
       "additionalProperties": false
