@@ -30,21 +30,35 @@ jobs:
       - name: Setup Bun Environment
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6
 
+      - name: Install Pi CLI
+        run: bun add -g --ignore-scripts @earendil-works/pi-coding-agent
+
+      - name: Configure Pi Auth
+        if: env.DEEPSEEK_API_KEY != ''
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          mkdir -p ~/.pi/agent
+          cat << EOF > ~/.pi/agent/auth.json
+          {
+            "deepseek": {
+              "type": "api_key",
+              "key": "$DEEPSEEK_API_KEY"
+            }
+          }
+          EOF
+
       - name: Execute Artifact Review
         env:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
-          PR_TITLE: ${{ github.event.pull_request.title }}
-          BASE_REF: ${{ github.event.pull_request.base.ref }}
-          HEAD_REF: ${{ github.event.pull_request.head.ref }}
         run: |
-          echo "Executing 3-Axis Artifact Review for PR #$PR_NUMBER ($PR_TITLE)"
-          
           if [ -z "$DEEPSEEK_API_KEY" ]; then
             echo "DEEPSEEK_API_KEY not configured. Running dry-run check..."
-            gh pr comment "$PR_NUMBER" --body "Artifact Reviewer (Dry-run): Architecture and contract checks passed." || true
+            gh pr comment "$PR_NUMBER" --body "Artifact Reviewer: Architecture and contract checks passed (dry-run)." || true
           else
-            echo "Invoking DeepSeek Tool-Calling with .agents/skills/artifact-reviewer/SKILL.md..."
-            # bun x pi run --skill ".agents/skills/artifact-reviewer/SKILL.md" --pr "$PR_NUMBER"
+            git diff origin/main...HEAD > pr_diff.patch
+            pi -p "依照 .agents/skills/artifact-reviewer/SKILL.md 审查 pr_diff.patch" -m deepseek/deepseek-v4-flash --tools read --no-session > review_report.md
+            gh pr comment "$PR_NUMBER" --body-file review_report.md
           fi
