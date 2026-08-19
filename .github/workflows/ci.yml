@@ -87,6 +87,7 @@ jobs:
         if: steps.check-rust.outputs.has_rust == 'true'
         uses: dtolnay/rust-toolchain@6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772
         with:
+          toolchain: stable
           components: clippy, rustfmt
 
       - name: Rust Cache
@@ -97,13 +98,15 @@ jobs:
         if: steps.check-rust.outputs.has_rust == 'true'
         run: cargo fmt --all -- --check
 
-      - name: Clippy Linter
+      - name: Clippy Linter (Strict Production & All Targets)
         if: steps.check-rust.outputs.has_rust == 'true'
-        run: cargo clippy --workspace --all-targets -- -D warnings
+        run: |
+          cargo clippy --workspace --lib --bins --all-features -- -D clippy::unwrap_used -D clippy::expect_used -D clippy::panic -D clippy::panic_in_result_fn -D clippy::todo -D clippy::unimplemented -D clippy::dbg_macro -D clippy::print_stdout -D clippy::print_stderr -D warnings
+          cargo clippy --workspace --all-targets --all-features -- -D warnings
 
       - name: Run Unit & Unlocked BDD Tests
         if: steps.check-rust.outputs.has_rust == 'true'
-        run: cargo test --workspace -- --skip ignore
+        run: cargo test --workspace
 
   frontend-check:
     name: Frontend Typecheck & Lint

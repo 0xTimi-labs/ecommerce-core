@@ -1,12 +1,38 @@
+# Rust Build Artifacts
 /target
-Cargo.lock
+**/*.rs.bk
+*.profraw
+*.profdata
 
 # Node / Bun
-node_modules
-dist
-.astro
+node_modules/
+dist/
+.astro/
+*.tsbuildinfo
+.bun/
 
-# IDE & OS
-.idea
-.DS_Store
+# Environment & Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# IDE & Editor
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
 *.swp
+*.swo
+*~
+
+# Operating System
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# CI & Temporary Patches
+pr_diff.patch
+review_report.md
+review_output.md
