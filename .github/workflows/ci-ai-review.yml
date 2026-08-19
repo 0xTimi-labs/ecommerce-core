@@ -1,6 +1,9 @@
-name: CI AI Review (On-Demand)
+name: CI AI Review
 
 on:
+  pull_request:
+    types: [opened, ready_for_review]
+    branches: [main]
   issue_comment:
     types: [created]
 
@@ -13,17 +16,20 @@ jobs:
   ai-review:
     name: AI Review
     if: |
-      github.event.issue.pull_request != null &&
-      startsWith(github.event.comment.body, '/review') &&
-      (github.event.comment.author_association == 'OWNER' ||
-       github.event.comment.author_association == 'MEMBER' ||
-       github.event.comment.author_association == 'COLLABORATOR')
+      (github.event_name == 'pull_request' && github.event.pull_request.draft == false) ||
+      (github.event_name == 'issue_comment' && github.event.issue.pull_request != null &&
+       (contains(github.event.comment.body, '<!-- agent-review: request -->') ||
+        contains(github.event.comment.body, '<!-- agent-review: continue -->') ||
+        startsWith(github.event.comment.body, '/review')) &&
+       (github.event.comment.author_association == 'OWNER' ||
+        github.event.comment.author_association == 'MEMBER' ||
+        github.event.comment.author_association == 'COLLABORATOR'))
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR Branch
         uses: actions/checkout@f548e57e544e1ff5a4c46bf1e1b8685f8e4a348a # Node 24
         with:
-          ref: refs/pull/${{ github.event.issue.number }}/head
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || format('refs/pull/{0}/head', github.event.issue.number) }}
           fetch-depth: 0
 
       - name: Setup Bun Environment
@@ -32,13 +38,20 @@ jobs:
       - name: Install Pi CLI
         run: bun add -g --ignore-scripts @earendil-works/pi-coding-agent
 
+      - name: Install and Initialize RTK (Token-optimized CLI)
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | sh
+          echo "$HOME/.cargo/bin:$HOME/.local/bin" >> $GITHUB_PATH
+          export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
+          rtk init --agent pi --global
+
       - name: Restore Session Cache
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf # v4.2.2
         with:
           path: .pi_session
-          key: pi-session-${{ github.event.issue.number }}-${{ github.run_id }}
+          key: pi-session-${{ github.event.pull_request.number || github.event.issue.number }}-${{ github.run_id }}
           restore-keys: |
-            pi-session-${{ github.event.issue.number }}-
+            pi-session-${{ github.event.pull_request.number || github.event.issue.number }}-
 
       - name: Configure Pi Auth
         if: env.DEEPSEEK_API_KEY != ''
@@ -59,9 +72,12 @@ jobs:
         env:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ github.event.issue.number }}
+          PR_NUMBER: ${{ github.event.pull_request.number || github.event.issue.number }}
+          EVENT_NAME: ${{ github.event_name }}
           COMMENT_BODY: ${{ github.event.comment.body }}
         run: |
+          export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
+
           if [ -z "$DEEPSEEK_API_KEY" ]; then
             echo "DEEPSEEK_API_KEY not configured. Running dry-run check..."
             gh pr comment "$PR_NUMBER" --body "AI Reviewer: Review triggered (dry-run)." || true
@@ -78,21 +94,25 @@ jobs:
             ROLE="业务切片代码审查员"
           fi
 
-          # 2. 解析指令参数 (/review vs /review -c)
+          # 2. 判断会话模式：首次审查 vs 继承会话复核
           CONTINUE_FLAG=""
-          if [[ "$COMMENT_BODY" =~ ^/review[[:space:]]+(-c|--continue) ]]; then
-            if [ -d ".pi_session" ] && [ -n "$(ls -A .pi_session 2>/dev/null)" ]; then
-              CONTINUE_FLAG="-c"
-              PROMPT="开发者已更新代码并发出复核指令。请在当前会话中复核最新代码与反馈，依照 $SKILL_FILE 完成收敛判定。"
-            else
-              PROMPT="你是 $ROLE。当前正在开展 PR #${PR_NUMBER} 的审查。请结合 PR 历史评论记录进行审查，重点核验前序指出的问题是否已妥善修复，禁止横向发散新问题，依照 $SKILL_FILE 输出审查报告。"
+          IS_CONTINUE=false
+
+          if [ "$EVENT_NAME" = "issue_comment" ]; then
+            if [[ "$COMMENT_BODY" == *"<!-- agent-review: continue -->"* ]] || [[ "$COMMENT_BODY" =~ ^/review[[:space:]]+(-c|--continue) ]]; then
+              IS_CONTINUE=true
             fi
-          else
-            rm -rf .pi_session && mkdir -p .pi_session
-            PROMPT="你是 $ROLE。当前正在开展 PR #${PR_NUMBER} 的全量新审查。请全面扫描当前变更，依照 $SKILL_FILE 输出审查报告。"
           fi
 
-          # 3. 运行 Pi（使用 DeepSeek 并启用 Max 思考等级）
+          if [ "$IS_CONTINUE" = true ] && [ -d ".pi_session" ] && [ -n "$(ls -A .pi_session 2>/dev/null)" ]; then
+            CONTINUE_FLAG="-c"
+            PROMPT="开发者已更新代码并请求复核。请在当前会话中复核最新代码与反馈，依照 $SKILL_FILE 完成收敛判定。"
+          else
+            rm -rf .pi_session && mkdir -p .pi_session
+            PROMPT="你是 $ROLE。当前正在开展 PR #${PR_NUMBER} 的审查。请全面扫描当前变更，依照 $SKILL_FILE 输出审查报告。"
+          fi
+
+          # 3. 运行 Pi（启用 RTK 代理环境与 Max 思考等级）
           pi -p "$PROMPT" \
              --session-dir .pi_session \
              $CONTINUE_FLAG \
