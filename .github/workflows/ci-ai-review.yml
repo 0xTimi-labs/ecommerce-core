@@ -101,6 +101,10 @@ jobs:
             ROLE="Feature 代码审查员"
           fi
 
+          # 启动审查时重置状态标签：清除旧的 approved 与 changes-requested
+          gh pr edit "$PR_NUMBER" --remove-label "review/approved" 2>/dev/null || true
+          gh pr edit "$PR_NUMBER" --remove-label "review/changes-requested" 2>/dev/null || true
+
           # 启动时立即创建占位评论并获取 Comment ID
           COMMENT_ID=$(gh api "repos/${{ github.repository }}/issues/${PR_NUMBER}/comments" \
             -X POST \
