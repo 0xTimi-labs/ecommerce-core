@@ -44,18 +44,22 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Buf
+      - name: Setup Buf CLI
         uses: bufbuild/buf-setup-action@fbb91772b52752bd36ca8552d2ff4b94e111f24f
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Lint Protobuf Contracts
-        uses: bufbuild/buf-lint-action@f083debe706775d9342e791bd05644d8bdb56e11
+        run: buf lint
 
       - name: Check Breaking Changes
         if: github.event_name == 'pull_request'
-        uses: bufbuild/buf-breaking-action@23a308c1f4d59df97531f3aa6e5516c3e2eddf6a
-        continue-on-error: true
-        with:
-          against: 'https://github.com/${{ github.repository }}.git#branch=main'
+        run: |
+          if git ls-tree -r origin/main --name-only | grep -q '\.proto$'; then
+            buf breaking --against '.git#branch=main'
+          else
+            echo "Baseline main branch has no proto contracts yet. Skipping breaking check for initial bootstrap."
+          fi
 
   rust-check-and-test:
     name: Rust Checks & Tests
