@@ -65,7 +65,8 @@
             "type": "object",
             "required": [
               "sku_id",
-              "quantity"
+              "quantity",
+              "unit_price_minor"
             ],
             "properties": {
               "sku_id": {
@@ -77,6 +78,11 @@
                 "type": "integer",
                 "minimum": 1,
                 "description": "购买数量"
+              },
+              "unit_price_minor": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "商品单价（最小货币单位，如分）"
               }
             },
             "additionalProperties": false

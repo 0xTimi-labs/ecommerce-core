@@ -87,9 +87,9 @@ impl Payment {
         Ok(())
     }
 
-    /// 标记支付失败
+    /// 标记支付失败（仅允许从待处理或已授权状态流转）
     pub fn fail(&mut self) -> Result<(), PaymentError> {
-        if self.status == PaymentStatus::Captured {
+        if self.status != PaymentStatus::Pending && self.status != PaymentStatus::Authorized {
             return Err(PaymentError::InvalidStateTransition {
                 from: self.status,
                 to: PaymentStatus::Failed,

@@ -80,4 +80,6 @@ enum OrderStatus {
   ORDER_STATUS_PAID = 2;
   // 已取消
   ORDER_STATUS_CANCELLED = 3;
+  // 已履约完成
+  ORDER_STATUS_FULFILLED = 4;
 }

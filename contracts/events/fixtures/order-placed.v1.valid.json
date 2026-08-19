@@ -17,7 +17,8 @@
     "items": [
       {
         "sku_id": "sku-apple-1",
-        "quantity": 2
+        "quantity": 2,
+        "unit_price_minor": 5000
       }
     ]
   }
