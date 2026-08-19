@@ -45,10 +45,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Buf CLI
-        uses: bufbuild/buf-setup-action@fbb91772b52752bd36ca8552d2ff4b94e111f24f
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install Buf CLI
+        run: |
+          BIN_DIR="$HOME/.local/bin"
+          mkdir -p "$BIN_DIR"
+          curl -sSL "https://github.com/bufbuild/buf/releases/latest/download/buf-Linux-x86_64" -o "$BIN_DIR/buf"
+          chmod +x "$BIN_DIR/buf"
+          echo "$BIN_DIR" >> $GITHUB_PATH
 
       - name: Lint Protobuf Contracts
         run: |
@@ -75,10 +78,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@f548e57e544e1ff5a4c46bf1e1b8685f8e4a348a # Node 24
 
-      - name: Setup Buf CLI
-        uses: bufbuild/buf-setup-action@fbb91772b52752bd36ca8552d2ff4b94e111f24f
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install Buf CLI
+        run: |
+          BIN_DIR="$HOME/.local/bin"
+          mkdir -p "$BIN_DIR"
+          curl -sSL "https://github.com/bufbuild/buf/releases/latest/download/buf-Linux-x86_64" -o "$BIN_DIR/buf"
+          chmod +x "$BIN_DIR/buf"
+          echo "$BIN_DIR" >> $GITHUB_PATH
 
       - name: Generate Code from Protobuf Contracts
         run: |
@@ -127,10 +133,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@f548e57e544e1ff5a4c46bf1e1b8685f8e4a348a # Node 24
 
-      - name: Setup Buf CLI
-        uses: bufbuild/buf-setup-action@fbb91772b52752bd36ca8552d2ff4b94e111f24f
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install Buf CLI
+        run: |
+          BIN_DIR="$HOME/.local/bin"
+          mkdir -p "$BIN_DIR"
+          curl -sSL "https://github.com/bufbuild/buf/releases/latest/download/buf-Linux-x86_64" -o "$BIN_DIR/buf"
+          chmod +x "$BIN_DIR/buf"
+          echo "$BIN_DIR" >> $GITHUB_PATH
 
       - name: Generate Code from Protobuf Contracts
         run: |
