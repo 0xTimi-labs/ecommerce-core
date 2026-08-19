@@ -1,0 +1,3 @@
+interface:
+  display_name: "制品审查"
+  short_description: "审查契约设计、ADR与BDD场景制品"

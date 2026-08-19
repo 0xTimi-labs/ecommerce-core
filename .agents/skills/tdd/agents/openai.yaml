@@ -1,0 +1,3 @@
+interface:
+  display_name: "双层垂直TDD"
+  short_description: "外层验收与内层单测双循环开发规约"

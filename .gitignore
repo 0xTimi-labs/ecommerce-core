@@ -1,0 +1,12 @@
+/target
+Cargo.lock
+
+# Node / Bun
+node_modules
+dist
+.astro
+
+# IDE & OS
+.idea
+.DS_Store
+*.swp
