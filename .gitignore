@@ -1,10 +1,12 @@
 /target
-Cargo.lock
 
 # Node / Bun
 node_modules
 dist
 .astro
+
+# AI Sessions
+.pi_session
 
 # IDE & OS
 .idea

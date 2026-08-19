@@ -1,0 +1,16 @@
+version: v2
+plugins:
+  - remote: buf.build/community/neoeinstein-prost:v0.5.0
+    revision: 1
+    out: crates/wire-contracts/src/generated
+    opt:
+      - file_descriptor_set
+  - remote: buf.build/community/neoeinstein-tonic:v0.5.0
+    revision: 1
+    out: crates/wire-contracts/src/generated
+  - remote: buf.build/bufbuild/es:v2.14.0
+    revision: 1
+    out: apps/web/src/generated
+    opt:
+      - target=ts
+      - import_extension=none

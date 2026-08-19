@@ -9,10 +9,15 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   security-and-license:
     name: Security & License Audit
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout repository
         uses: actions/checkout@f548e57e544e1ff5a4c46bf1e1b8685f8e4a348a # Node 24
@@ -24,118 +29,76 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Dependency Review (PR only)
-        if: github.event_name == 'pull_request'
-        uses: actions/dependency-review-action@1e966ba708e4b64bb0c9bfb7abb5a232840be16a
-        continue-on-error: true
-
       - name: Check Cargo Dependencies & Licenses
-        if: hashFiles('Cargo.toml') != ''
         uses: EmbarkStudios/cargo-deny-action@9c67a826e39827395bfa619cd85cb2aaeb43cfaa
         with:
           command: check
 
   contract-lint:
-    name: Protobuf Contract Check
+    name: Protobuf Contract & Schema Check
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout repository
         uses: actions/checkout@f548e57e544e1ff5a4c46bf1e1b8685f8e4a348a # Node 24
-
-      - name: Check if contracts exist
-        id: check-contracts
-        run: |
-          if [ -d contracts ] && [ -f contracts/buf.yaml ]; then
-            echo "has_contracts=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "has_contracts=false" >> "$GITHUB_OUTPUT"
-          fi
+        with:
+          fetch-depth: 0
 
       - name: Setup Buf
-        if: steps.check-contracts.outputs.has_contracts == 'true'
         uses: bufbuild/buf-setup-action@fbb91772b52752bd36ca8552d2ff4b94e111f24f
 
       - name: Lint Protobuf Contracts
-        if: steps.check-contracts.outputs.has_contracts == 'true'
         uses: bufbuild/buf-lint-action@f083debe706775d9342e791bd05644d8bdb56e11
-        with:
-          input: contracts
 
       - name: Check Breaking Changes
-        if: github.event_name == 'pull_request' && steps.check-contracts.outputs.has_contracts == 'true'
+        if: github.event_name == 'pull_request'
         uses: bufbuild/buf-breaking-action@23a308c1f4d59df97531f3aa6e5516c3e2eddf6a
-        continue-on-error: true
         with:
-          input: contracts
           against: 'https://github.com/${{ github.repository }}.git#branch=main'
 
   rust-check-and-test:
     name: Rust Checks & Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout repository
         uses: actions/checkout@f548e57e544e1ff5a4c46bf1e1b8685f8e4a348a # Node 24
 
-      - name: Check if Cargo exists
-        id: check-rust
-        run: |
-          if [ -f Cargo.toml ]; then
-            echo "has_rust=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "has_rust=false" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Install Rust Stable
-        if: steps.check-rust.outputs.has_rust == 'true'
         uses: dtolnay/rust-toolchain@6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772
         with:
           toolchain: stable
           components: clippy, rustfmt
 
       - name: Rust Cache
-        if: steps.check-rust.outputs.has_rust == 'true'
         uses: Swatinem/rust-cache@f0d9c3887740aee45f6153b24b3a6b815192ec16
 
       - name: Check Formatting
-        if: steps.check-rust.outputs.has_rust == 'true'
         run: cargo fmt --all -- --check
 
       - name: Clippy Linter (Strict Production & All Targets)
-        if: steps.check-rust.outputs.has_rust == 'true'
         run: |
           cargo clippy --workspace --lib --bins --all-features -- -D clippy::unwrap_used -D clippy::expect_used -D clippy::panic -D clippy::panic_in_result_fn -D clippy::todo -D clippy::unimplemented -D clippy::dbg_macro -D clippy::print_stdout -D clippy::print_stderr -D warnings
           cargo clippy --workspace --all-targets --all-features -- -D warnings
 
-      - name: Run Unit & Unlocked BDD Tests
-        if: steps.check-rust.outputs.has_rust == 'true'
+      - name: Run Unit & BDD Acceptance Tests
         run: cargo test --workspace
 
   frontend-check:
-    name: Frontend Typecheck & Lint
+    name: Frontend Typecheck & Event Schema Validation
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout repository
         uses: actions/checkout@f548e57e544e1ff5a4c46bf1e1b8685f8e4a348a # Node 24
 
-      - name: Check if Frontend exists
-        id: check-frontend
-        run: |
-          if [ -f apps/web/package.json ]; then
-            echo "has_frontend=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "has_frontend=false" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Setup Bun
-        if: steps.check-frontend.outputs.has_frontend == 'true'
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6
 
       - name: Install Frontend Dependencies
-        if: steps.check-frontend.outputs.has_frontend == 'true'
         working-directory: apps/web
         run: bun install --frozen-lockfile
 
-      - name: Run Frontend Typecheck
-        if: steps.check-frontend.outputs.has_frontend == 'true'
+      - name: Run Frontend Lint, Typecheck & JSON Schema Validation
         working-directory: apps/web
         run: bun run check
