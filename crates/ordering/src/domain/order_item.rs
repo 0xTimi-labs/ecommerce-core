@@ -3,7 +3,7 @@ use shared_kernel::{Money, SkuId};
 
 use super::errors::OrderingError;
 
-/// 订单商品行项实体 (Order Item Entity)
+/// 订单商品行项实体
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct OrderItem {
     sku_id: SkuId,

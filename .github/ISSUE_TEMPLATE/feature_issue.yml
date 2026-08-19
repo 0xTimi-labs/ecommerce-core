@@ -23,7 +23,7 @@ body:
     attributes:
       label: 涉及的限界上下文
       description: 列出本特性跨越或归属的上下文
-      placeholder: "- 订单上下文 (ordering)\n- 支付上下文 (payment)..."
+      placeholder: "- 订单\n- 支付\n- 库存履约"
     validations:
       required: true
 
@@ -32,6 +32,6 @@ body:
     attributes:
       label: 垂直切片拆解计划
       description: 将该特性拆解为最小可闭环验证的切片清单及执行顺序
-      placeholder: "- [ ] 切片 1: 正向核心流程与内存仓储 (Sub-Issue #...)\n- [ ] 切片 2: 异常分支与逆向补偿流程 (Sub-Issue #...)\n- [ ] 切片 3: 真实适配器与持久化接入 (Sub-Issue #...)"
+      placeholder: "- [ ] 切片 1: 正向核心流程与内存仓储\n- [ ] 切片 2: 异常分支与逆向补偿流程\n- [ ] 切片 3: 真实适配器与持久化接入"
     validations:
       required: true

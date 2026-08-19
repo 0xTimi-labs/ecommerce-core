@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://ecommerce-core.local/events/order-placed.v1.schema.json",
-  "title": "OrderPlaced v1 (CloudEvents)",
+  "title": "OrderPlacedEvent",
   "description": "客户成功提交订单事实；包含权威报价单、金额及商品明细，驱动下游库存预留与支付预授权",
   "allOf": [
     {

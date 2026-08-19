@@ -8,9 +8,9 @@
 context-map.md                          # 限界上下文映射关系
 buf.yaml / buf.gen.yaml                 # Buf v2 契约治理与跨语言代码生成配置
 docs/
-├── VISION.md                           # 产品愿景
+├── vision.md                           # 产品愿景
 ├── architecture/                       # 架构设计与工程规范
-│   ├── ARCHITECTURE.md
+│   ├── architecture.md
 │   └── project-structure.md
 └── adr/                                # 架构决策记录 (0001~0005)
 

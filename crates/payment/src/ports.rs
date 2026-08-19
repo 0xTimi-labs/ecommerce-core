@@ -5,7 +5,7 @@ use crate::domain::{
     Payment, PaymentAuthorizedEvent, PaymentCapturedEvent, PaymentError, PaymentFailedEvent,
 };
 
-/// 支付网关出向从端口 (Driven Outgoing Port)
+/// 支付网关出向从端口
 #[async_trait]
 pub trait PaymentGatewayPort: Send + Sync {
     /// 向外部支付通道发起预授权
@@ -26,7 +26,7 @@ pub trait PaymentGatewayPort: Send + Sync {
     async fn void(&self, authorization_id: &AuthorizationId) -> Result<(), PaymentError>;
 }
 
-/// 支付仓储出向从端口 (Driven Outgoing Port)
+/// 支付仓储出向从端口
 #[async_trait]
 pub trait PaymentRepositoryPort: Send + Sync {
     /// 持久化支付聚合
@@ -39,7 +39,7 @@ pub trait PaymentRepositoryPort: Send + Sync {
     async fn find_by_order_id(&self, order_id: &OrderId) -> Result<Option<Payment>, PaymentError>;
 }
 
-/// 支付领域事件发布出向从端口 (Driven Outgoing Port)
+/// 支付领域事件发布出向从端口
 #[async_trait]
 pub trait PaymentEventPublisherPort: Send + Sync {
     /// 发布支付预授权完成领域事件

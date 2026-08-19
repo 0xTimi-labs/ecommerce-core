@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://ecommerce-core.local/events/payment-captured.v1.schema.json",
-  "title": "PaymentCaptured v1 (CloudEvents)",
+  "title": "PaymentCapturedEvent",
   "description": "实际资金清算扣款完成事实，用于财务对账并推进订单进入已支付状态",
   "allOf": [
     {

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://ecommerce-core.local/events/payment-authorized.v1.schema.json",
-  "title": "PaymentAuthorized v1 (CloudEvents)",
+  "title": "PaymentAuthorizedEvent",
   "description": "资金额度冻结事实，代表交易资金具备履约保障",
   "allOf": [
     {

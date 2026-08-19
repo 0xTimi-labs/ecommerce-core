@@ -28,9 +28,9 @@
 
 ## 标记说明
 
-- **U**: 上游 `Upstream`
-- **D**: 下游 `Downstream`
-- **OHS**: 开放服务 `Open Host Service`
-- **PL**: 发布者语言 `Published Language`
-- **ACL**: 防腐层 `Anticorruption Layer`
-- **SK**: 共享内核 `Shared Kernel`
+- **U**: 上游
+- **D**: 下游
+- **OHS**: 开放主机服务
+- **PL**: 发布者语言
+- **ACL**: 防腐层
+- **SK**: 共享内核

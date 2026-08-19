@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://ecommerce-core.local/events/payment-failed.v1.schema.json",
-  "title": "PaymentFailed v1 (CloudEvents)",
+  "title": "PaymentFailedEvent",
   "description": "支付授权或请款失败事实；触发订单状态流转至取消并触发分布式逆向补偿",
   "allOf": [
     {

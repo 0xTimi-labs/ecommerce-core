@@ -20,7 +20,7 @@ pub enum PaymentStatus {
     Failed,
 }
 
-/// 支付聚合根 (Payment Aggregate Root)
+/// 支付聚合根
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Payment {
     id: PaymentId,
@@ -32,25 +32,29 @@ pub struct Payment {
 }
 
 impl Payment {
-    /// 创建新的支付意向
-    #[must_use]
-    pub fn new(order_id: OrderId, amount: Money) -> Self {
-        Self {
+    /// 创建新的支付意向并校验不变量
+    pub fn new(order_id: OrderId, amount: Money) -> Result<Self, PaymentError> {
+        if amount.is_zero() {
+            return Err(PaymentError::InvalidAmount(
+                "支付意向金额必须大于 0".to_string(),
+            ));
+        }
+        Ok(Self {
             id: PaymentId::new(),
             order_id,
             amount,
             authorization_id: None,
             capture_id: None,
             status: PaymentStatus::Pending,
-        }
+        })
     }
 
     /// 执行预授权
     pub fn authorize(&mut self, authorization_id: AuthorizationId) -> Result<(), PaymentError> {
         if self.status != PaymentStatus::Pending {
             return Err(PaymentError::InvalidStateTransition {
-                current: "非 Pending 状态",
-                action: "authorize",
+                from: self.status,
+                to: PaymentStatus::Authorized,
             });
         }
         self.authorization_id = Some(authorization_id);
@@ -62,8 +66,8 @@ impl Payment {
     pub fn capture(&mut self, capture_id: CaptureId) -> Result<(), PaymentError> {
         if self.status != PaymentStatus::Authorized {
             return Err(PaymentError::InvalidStateTransition {
-                current: "非 Authorized 状态",
-                action: "capture",
+                from: self.status,
+                to: PaymentStatus::Captured,
             });
         }
         self.capture_id = Some(capture_id);
@@ -75,8 +79,8 @@ impl Payment {
     pub fn void(&mut self) -> Result<(), PaymentError> {
         if self.status != PaymentStatus::Authorized {
             return Err(PaymentError::InvalidStateTransition {
-                current: "非 Authorized 状态",
-                action: "void",
+                from: self.status,
+                to: PaymentStatus::Voided,
             });
         }
         self.status = PaymentStatus::Voided;
@@ -87,8 +91,8 @@ impl Payment {
     pub fn fail(&mut self) -> Result<(), PaymentError> {
         if self.status == PaymentStatus::Captured {
             return Err(PaymentError::InvalidStateTransition {
-                current: "已 Captured 状态",
-                action: "fail",
+                from: self.status,
+                to: PaymentStatus::Failed,
             });
         }
         self.status = PaymentStatus::Failed;

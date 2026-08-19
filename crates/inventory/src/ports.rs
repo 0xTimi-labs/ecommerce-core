@@ -5,7 +5,7 @@ use crate::domain::{
     InventoryError, StockReleasedEvent, StockReservation, StockReservedEvent, StockShortageEvent,
 };
 
-/// 库存仓储出向从端口 (Driven Outgoing Port)
+/// 库存仓储出向从端口
 #[async_trait]
 pub trait InventoryRepositoryPort: Send + Sync {
     /// 持久化库存预留聚合
@@ -24,7 +24,7 @@ pub trait InventoryRepositoryPort: Send + Sync {
     ) -> Result<Option<StockReservation>, InventoryError>;
 }
 
-/// 库存领域事件发布出向从端口 (Driven Outgoing Port)
+/// 库存领域事件发布出向从端口
 #[async_trait]
 pub trait InventoryEventPublisherPort: Send + Sync {
     /// 发布库存预留成功领域事件

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://ecommerce-core.local/events/stock-reserved.v1.schema.json",
-  "title": "StockReserved v1 (CloudEvents)",
+  "title": "StockReservedEvent",
   "description": "实物库存成功原子锁定事实，代表商品具备履约库存保障",
   "allOf": [
     {

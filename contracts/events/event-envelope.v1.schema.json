@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://ecommerce-core.local/events/event-envelope.v1.schema.json",
-  "title": "CloudEvents v1.0 统一标准信封",
+  "title": "EventEnvelope",
   "description": "严格遵循 CNCF CloudEvents 1.0 规范的领域事件标准信封，统一分布式关联追踪、因果链与消息路由",
   "type": "object",
   "required": [

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://ecommerce-core.local/events/stock-shortage.v1.schema.json",
-  "title": "StockShortage v1 (CloudEvents)",
+  "title": "StockShortageEvent",
   "description": "实物库存不足事实；触发订单自动取消并通知客户缺货补偿",
   "allOf": [
     {

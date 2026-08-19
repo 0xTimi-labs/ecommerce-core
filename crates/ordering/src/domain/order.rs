@@ -7,7 +7,7 @@ use super::errors::OrderingError;
 use super::events::OrderCancelledEvent;
 use super::order_item::OrderItem;
 
-/// 订单流转状态 (Saga 状态机与统一语言对齐)
+/// 订单流转状态
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum OrderStatus {
     /// 已下单（初始状态）
@@ -20,7 +20,7 @@ pub enum OrderStatus {
     Cancelled,
 }
 
-/// 订单聚合根 (Order Aggregate Root)
+/// 订单聚合根
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Order {
     id: OrderId,

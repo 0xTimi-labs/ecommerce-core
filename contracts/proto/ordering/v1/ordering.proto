@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package ordering.v1;
 
-// 订单服务 RPC 契约 (开放主机服务 OHS)
+// 订单服务 RPC 契约
 service OrderingService {
   // 创建订单（由服务端权威计算金额并校验幂等性）
   rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse);

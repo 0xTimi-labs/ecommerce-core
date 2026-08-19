@@ -3,7 +3,7 @@ use shared_kernel::OrderId;
 
 use crate::domain::{Order, OrderCancelledEvent, OrderPlacedEvent, OrderingError};
 
-/// 订单仓储出向从端口 (Driven Port)
+/// 订单仓储出向从端口
 #[async_trait]
 pub trait OrderRepositoryPort: Send + Sync {
     /// 保存或更新订单聚合根
@@ -12,7 +12,7 @@ pub trait OrderRepositoryPort: Send + Sync {
     async fn find_by_id(&self, id: &OrderId) -> Result<Option<Order>, OrderingError>;
 }
 
-/// 领域事件发布出向从端口 (Driven Port)
+/// 领域事件发布出向从端口
 #[async_trait]
 pub trait EventPublisherPort: Send + Sync {
     /// 发布订单创建领域事件

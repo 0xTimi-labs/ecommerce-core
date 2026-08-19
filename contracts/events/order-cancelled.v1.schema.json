@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://ecommerce-core.local/events/order-cancelled.v1.schema.json",
-  "title": "OrderCancelled v1 (CloudEvents)",
+  "title": "OrderCancelledEvent",
   "description": "订单取消事实；触发支付上下文释放预授权/退款以及库存上下文释放预留库存",
   "allOf": [
     {
