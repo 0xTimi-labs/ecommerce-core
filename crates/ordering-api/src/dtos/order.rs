@@ -26,8 +26,12 @@ pub struct OrderItemDto {
 pub struct OrderDto {
     /// 订单标识
     pub order_id: OrderId,
+    /// 客户标识
+    pub customer_id: CustomerId,
     /// 订单状态
     pub status: String,
+    /// 订单项列表
+    pub items: Vec<OrderItemDto>,
     /// 订单总金额
     pub total_amount: Money,
 }
