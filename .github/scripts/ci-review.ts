@@ -53,16 +53,7 @@ export function transition(
       };
 
     case 'EVALUATE_AI_VERDICT': {
-      const hasApproved = event.currentLabels.includes('review/approved');
       const hasChangesRequested = event.currentLabels.includes('review/changes-requested');
-
-      if (hasApproved) {
-        return {
-          nextState: ReviewState.APPROVED,
-          labelsToAdd: [],
-          labelsToRemove: ['review/ready', 'review/changes-requested'],
-        };
-      }
 
       if (hasChangesRequested) {
         return {
@@ -73,9 +64,9 @@ export function transition(
       }
 
       return {
-        nextState: currentState,
-        labelsToAdd: [],
-        labelsToRemove: [],
+        nextState: ReviewState.APPROVED,
+        labelsToAdd: ['review/approved'],
+        labelsToRemove: ['review/ready', 'review/changes-requested'],
       };
     }
   }

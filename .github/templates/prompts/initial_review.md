@@ -7,5 +7,3 @@
 
 > 存在 P0 时需执行：
 `gh api "repos/{{repo}}/issues/{{pr_number}}/labels" -X POST -f "labels[]=review/changes-requested"`
-> 若无 P0 判定通过需执行：
-`gh api "repos/{{repo}}/issues/{{pr_number}}/labels" -X POST -f "labels[]=review/approved"`

@@ -15,17 +15,17 @@ description: 审查架构设计与契约制品；当提交架构 PR、契约设�
 
 ### 1. 边界与统一语言
 - 核对 `context-map.md`，确认上下文边界与关系模式标注准确
-- 对照各上下文 `context.md` 术语表，核验 `contracts/` 下的 `.proto` 字段与事件 Schema 命名一致（全量使用 snake_case）
-- 确认 `crates/shared-kernel` 保持极简，仅包含通用强类型标识符与 Money 值对象
+- 对照各上下文 `context.md` 术语表，核验 `contracts/` 下的 `.proto` 字段与事件 Schema 命名一致
+- 确认 `crates/shared-kernel` 保持极简，仅包含通用强类型标识符与值对象
 
-### 2. 契约与验收规格
+### 2. 架构决策与端口设计
+- 依照 ADR 准则审查 `docs/adr/`，详见 `/domain-modeling` skill
+- 确认 Ports 接口签名完备且与领域模型输入输出对齐
+
+### 3. 契约与验收规格
 - 核验 `tests/features/*.feature` 场景均以黑盒 Given-When-Then 描述业务意图
 - 确认初始骨架中的全部 Scenario 均带有 `@ignore` 标签
 - 确认核心业务不变量与主流程有基础场景锚点
-
-### 3. 架构决策与端口设计
-- 依照 ADR 准则审查 `docs/adr/`，详见 `/domain-modeling` skill
-- 确认 Ports 接口签名完备且与领域模型输入输出对齐
 
 ## 问题分级
 
@@ -38,16 +38,14 @@ description: 审查架构设计与契约制品；当提交架构 PR、契约设�
 ```markdown
 # Artifact Review 报告
 
+- P0: <N> | P1: <N> | P2: <N>
+
 ## 边界与统一语言
 - [P0/P1/P2] <问题描述> (引用 context-map.md 上下文名称或 .proto 字段)
-
-## 契约与验收规格
-- [P0/P1/P2] <问题描述> (引用 .feature 中的 Scenario 名称)
 
 ## 架构决策与端口设计
 - [P0/P1/P2] <问题描述> (引用 ADR 标题或代码结构)
 
-## 判定
-- 结果: APPROVED / REQUEST_CHANGES (存在 P0 时为 REQUEST_CHANGES)
-- P0: <N> | P1: <N> | P2: <N>
+## 契约与验收规格
+- [P0/P1/P2] <问题描述> (引用 .feature 中的 Scenario 名称)
 ```

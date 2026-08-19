@@ -34,13 +34,11 @@ description: 审查业务切片代码 PR；当切片开发完成、提交代码�
 ```markdown
 # Code Review 报告
 
+- P0: <N> | P1: <N> | P2: <N>
+
 ## 需求与契约一致性
 - [P0/P1/P2] <问题描述>
 
 ## 领域纯度与代码质量
 - [P0/P1/P2] <file_path>: <问题描述>
-
-## 判定
-- 结果: APPROVED / REQUEST_CHANGES (存在 P0 时为 REQUEST_CHANGES)
-- P0: <N> | P1: <N> | P2: <N>
 ```
