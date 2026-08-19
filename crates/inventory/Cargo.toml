@@ -1,0 +1,26 @@
+[package]
+name = "inventory"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+wire-contracts = { path = "../wire-contracts" }
+inventory-api = { path = "../inventory-api" }
+shared-kernel = { path = "../shared-kernel" }
+serde.workspace = true
+thiserror.workspace = true
+async-trait.workspace = true
+uuid.workspace = true
+chrono.workspace = true
+
+[dev-dependencies]
+cucumber.workspace = true
+tokio.workspace = true
+
+[[test]]
+name = "acceptance"
+harness = false
+
+[lints]
+workspace = true

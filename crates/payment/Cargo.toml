@@ -1,0 +1,26 @@
+[package]
+name = "payment"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+wire-contracts = { path = "../wire-contracts" }
+payment-api = { path = "../payment-api" }
+shared-kernel = { path = "../shared-kernel" }
+serde.workspace = true
+thiserror.workspace = true
+async-trait.workspace = true
+uuid.workspace = true
+chrono.workspace = true
+
+[dev-dependencies]
+cucumber.workspace = true
+tokio.workspace = true
+
+[[test]]
+name = "acceptance"
+harness = false
+
+[lints]
+workspace = true
