@@ -1,6 +1,5 @@
-<!-- agent-review: request -->
-Fixes #{issue_id}
+Closes #{issue_id}
 
 ## 变更说明
 
-{说明本特性的改动重点与非显而易见的考量（如无特殊细节可简写）}
+{说明本 Feature 的改动重点与实现考量（无特殊细节可简写）}

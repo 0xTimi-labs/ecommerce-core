@@ -1,6 +1,0 @@
-<!-- agent-review: request -->
-Closes #{issue_id}
-
-## 决策说明
-
-{说明本次实现的关键考量与非显而易见的细节（如无特殊细节可简写）}

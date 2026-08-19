@@ -1,0 +1,47 @@
+name: 缺陷反馈
+description: 提交在使用过程中发现的问题或异常
+title: "[Bug]: "
+labels: ["type/bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 缺陷反馈
+        请尽可能详细地描述问题，以便快速定位和解决。
+
+  - type: textarea
+    id: problem_description
+    attributes:
+      label: 问题描述
+      description: 发生了什么问题？
+      placeholder: 清晰简要地描述遇到的异常行为...
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction_steps
+    attributes:
+      label: 复现步骤
+      description: 重现该问题的具体操作步骤
+      placeholder: |
+        1. 执行操作...
+        2. 输入参数...
+        3. 触发异常...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: 期望行为与实际结果
+      description: 期望的表现与实际的表现分别是什么？
+      placeholder: 期望应该...，但实际发生了...
+    validations:
+      required: true
+
+  - type: textarea
+    id: context_info
+    attributes:
+      label: 环境或日志信息
+      description: 错误日志、控制台输出或相关环境版本
+      placeholder: 粘贴相关日志或环境信息...
