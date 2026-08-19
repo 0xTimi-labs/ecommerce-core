@@ -19,29 +19,26 @@ impl InMemoryInventoryRepository {
 #[async_trait]
 impl InventoryRepositoryPort for InMemoryInventoryRepository {
     async fn save(&self, _reservation: &StockReservation) -> Result<(), InventoryError> {
-        Err(InventoryError::NotImplemented {
-            feature: "InMemoryInventoryRepository::save",
-            slice: 1,
-        })
+        Err(InventoryError::NotImplemented(
+            "InMemoryInventoryRepository::save",
+        ))
     }
 
     async fn find_by_id(
         &self,
         _id: &ReservationId,
     ) -> Result<Option<StockReservation>, InventoryError> {
-        Err(InventoryError::NotImplemented {
-            feature: "InMemoryInventoryRepository::find_by_id",
-            slice: 1,
-        })
+        Err(InventoryError::NotImplemented(
+            "InMemoryInventoryRepository::find_by_id",
+        ))
     }
 
     async fn find_by_order_id(
         &self,
         _order_id: &OrderId,
     ) -> Result<Option<StockReservation>, InventoryError> {
-        Err(InventoryError::NotImplemented {
-            feature: "InMemoryInventoryRepository::find_by_order_id",
-            slice: 1,
-        })
+        Err(InventoryError::NotImplemented(
+            "InMemoryInventoryRepository::find_by_order_id",
+        ))
     }
 }

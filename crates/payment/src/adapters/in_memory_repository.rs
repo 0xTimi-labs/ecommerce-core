@@ -19,23 +19,20 @@ impl InMemoryPaymentRepository {
 #[async_trait]
 impl PaymentRepositoryPort for InMemoryPaymentRepository {
     async fn save(&self, _payment: &Payment) -> Result<(), PaymentError> {
-        Err(PaymentError::NotImplemented {
-            feature: "InMemoryPaymentRepository::save",
-            slice: 1,
-        })
+        Err(PaymentError::NotImplemented(
+            "InMemoryPaymentRepository::save",
+        ))
     }
 
     async fn find_by_id(&self, _id: &PaymentId) -> Result<Option<Payment>, PaymentError> {
-        Err(PaymentError::NotImplemented {
-            feature: "InMemoryPaymentRepository::find_by_id",
-            slice: 1,
-        })
+        Err(PaymentError::NotImplemented(
+            "InMemoryPaymentRepository::find_by_id",
+        ))
     }
 
     async fn find_by_order_id(&self, _order_id: &OrderId) -> Result<Option<Payment>, PaymentError> {
-        Err(PaymentError::NotImplemented {
-            feature: "InMemoryPaymentRepository::find_by_order_id",
-            slice: 1,
-        })
+        Err(PaymentError::NotImplemented(
+            "InMemoryPaymentRepository::find_by_order_id",
+        ))
     }
 }

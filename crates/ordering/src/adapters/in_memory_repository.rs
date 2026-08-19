@@ -19,16 +19,14 @@ impl InMemoryOrderRepository {
 #[async_trait]
 impl OrderRepositoryPort for InMemoryOrderRepository {
     async fn save(&self, _order: &Order) -> Result<(), OrderingError> {
-        Err(OrderingError::NotImplemented {
-            feature: "InMemoryOrderRepository::save",
-            slice: 1,
-        })
+        Err(OrderingError::NotImplemented(
+            "InMemoryOrderRepository::save",
+        ))
     }
 
     async fn find_by_id(&self, _id: &OrderId) -> Result<Option<Order>, OrderingError> {
-        Err(OrderingError::NotImplemented {
-            feature: "InMemoryOrderRepository::find_by_id",
-            slice: 1,
-        })
+        Err(OrderingError::NotImplemented(
+            "InMemoryOrderRepository::find_by_id",
+        ))
     }
 }

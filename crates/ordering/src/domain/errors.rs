@@ -3,14 +3,9 @@ use thiserror::Error;
 /// 订单上下文领域业务错误
 #[derive(Debug, Error, PartialEq, Eq)]
 pub enum OrderingError {
-    /// 目标功能切片尚未实现
-    #[error("功能尚未实现: {feature} (规划于 Slice {slice})")]
-    NotImplemented {
-        /// 功能名称
-        feature: &'static str,
-        /// 规划交付切片序号
-        slice: u32,
-    },
+    /// 目标功能尚未实现
+    #[error("功能尚未实现: {0}")]
+    NotImplemented(&'static str),
 
     /// 订单业务校验失败
     #[error("订单业务校验失败: {0}")]
