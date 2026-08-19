@@ -10,7 +10,7 @@
 避免: 采购单, 交易, PurchaseOrder
 
 **订单项**:
-订单中包含的单项商品条目，包含 SkuId、购买数量与锁定单价
+订单中包含的单项商品条目
 等价: OrderItem
 避免: 子订单, 商品项
 
@@ -20,6 +20,6 @@
 避免: 消费者, 账户, Client, User
 
 **订单状态**:
-订单生命周期状态（Draft, Placed, Paid, Fulfilled, Cancelled）
+订单生命周期流转状态
 等价: OrderStatus
 避免: 交易状态, 流程节点
