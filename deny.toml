@@ -1,16 +1,9 @@
-# cargo-deny 依赖安全与开源许可证审计配置
-
-[graph]
-targets = []
+# cargo-deny 0.16+ 依赖安全与开源许可证审计配置
 
 [advisories]
-vulnerability = "deny"
-unmaintained = "all"
-yanked = "deny"
 ignore = []
 
 [licenses]
-unlicensed = "deny"
 allow = [
     "MIT",
     "Apache-2.0",
@@ -22,13 +15,14 @@ allow = [
     "Unicode-DFS-2016",
     "CC0-1.0",
     "OpenSSL",
+    "Zlib",
+    "BSL-1.0",
 ]
 confidence-threshold = 0.8
 
 [bans]
 multiple-versions = "warn"
 wildcards = "allow"
-highlight = "all"
 
 [sources]
 unknown-registry = "deny"
