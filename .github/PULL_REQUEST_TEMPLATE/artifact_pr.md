@@ -1,4 +1,4 @@
-#{issue_id}
+Closes #{issue_id}
 
 ## 决策说明
 
