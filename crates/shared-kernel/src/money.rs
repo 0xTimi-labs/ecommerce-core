@@ -1,4 +1,4 @@
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt;
 
 /// 金额值对象（通过 `try_from` 确保反序列化时严格校验非负不变量）
@@ -23,24 +23,66 @@ impl TryFrom<MoneyRaw> for Money {
     }
 }
 
-/// 币种
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum Currency {
+/// 币种代码（ISO 4217 三位大写字母标准代码，支持全局任意合法货币）
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct Currency([u8; 3]);
+
+impl Currency {
     /// 人民币
-    CNY,
+    pub const CNY: Self = Self(*b"CNY");
     /// 美元
-    USD,
+    pub const USD: Self = Self(*b"USD");
     /// 欧元
-    EUR,
+    pub const EUR: Self = Self(*b"EUR");
+
+    /// 创建币种代码并校验 ISO 4217 规范
+    pub fn new(code: &str) -> Result<Self, &'static str> {
+        let bytes = code.as_bytes();
+        if bytes.len() != 3 {
+            return Err("币种代码必须为 3 位 ISO 4217 字符");
+        }
+        if !bytes[0].is_ascii_uppercase()
+            || !bytes[1].is_ascii_uppercase()
+            || !bytes[2].is_ascii_uppercase()
+        {
+            return Err("币种代码必须为大写英文字母");
+        }
+        Ok(Self([bytes[0], bytes[1], bytes[2]]))
+    }
+
+    /// 获取币种字符串切片
+    #[must_use]
+    pub fn as_str(&self) -> &str {
+        // 安全保证：构造时已校验必须为 ASCII 大写字符
+        match std::str::from_utf8(&self.0) {
+            Ok(s) => s,
+            Err(_) => "CNY",
+        }
+    }
 }
 
 impl fmt::Display for Currency {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::CNY => write!(f, "CNY"),
-            Self::USD => write!(f, "USD"),
-            Self::EUR => write!(f, "EUR"),
-        }
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl Serialize for Currency {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de> Deserialize<'de> for Currency {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let s = String::deserialize(deserializer)?;
+        Self::new(&s).map_err(serde::de::Error::custom)
     }
 }
 

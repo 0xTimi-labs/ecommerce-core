@@ -8,6 +8,8 @@ service OrderingService {
   rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse);
   // 获取订单详情与状态（用于支付发起、履约核对与财务对账）
   rpc GetOrder(GetOrderRequest) returns (GetOrderResponse);
+  // 取消订单（状态保护：仅允许未履约订单取消并触发补偿事件）
+  rpc CancelOrder(CancelOrderRequest) returns (CancelOrderResponse);
 }
 
 // 货币金额类型
@@ -84,6 +86,22 @@ message GetOrderResponse {
   QuoteReference quote_reference = 5;
   // 订单总金额
   Money total_amount = 6;
+}
+
+// 取消订单请求
+message CancelOrderRequest {
+  // 目标订单标识
+  string order_id = 1;
+  // 取消原因
+  string reason = 2;
+}
+
+// 取消订单响应
+message CancelOrderResponse {
+  // 订单唯一标识
+  string order_id = 1;
+  // 订单最终状态
+  OrderStatus status = 2;
 }
 
 // 订单流转状态枚举

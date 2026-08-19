@@ -20,6 +20,8 @@ pub enum PaymentStatus {
     Voided,
     /// 款项已退还
     Refunded,
+    /// 预授权被拒绝
+    Declined,
     /// 支付失败
     Failed,
 }
@@ -113,9 +115,21 @@ impl Payment {
         })
     }
 
-    /// 执行退款流转
-    pub fn refund(&mut self, refund_id: RefundId) -> Result<PaymentRefundedEvent, PaymentError> {
+    /// 执行退款流转（支持指定退款金额，校验退款币种与额度上限）
+    pub fn refund(
+        &mut self,
+        refund_id: RefundId,
+        amount: Money,
+    ) -> Result<PaymentRefundedEvent, PaymentError> {
         if self.status != PaymentStatus::Captured {
+            return Err(PaymentError::InvalidStateTransition {
+                from: self.status,
+                to: PaymentStatus::Refunded,
+            });
+        }
+        if amount.currency() != self.amount.currency()
+            || amount.amount_minor() > self.amount.amount_minor()
+        {
             return Err(PaymentError::InvalidStateTransition {
                 from: self.status,
                 to: PaymentStatus::Refunded,
@@ -133,7 +147,26 @@ impl Payment {
             refund_id,
             capture_id,
             order_id: self.order_id,
+            amount,
+            occurred_at: Utc::now(),
+        })
+    }
+
+    /// 标记预授权被通道拒绝
+    pub fn decline(&mut self, reason: String) -> Result<PaymentFailedEvent, PaymentError> {
+        if self.status != PaymentStatus::Pending {
+            return Err(PaymentError::InvalidStateTransition {
+                from: self.status,
+                to: PaymentStatus::Declined,
+            });
+        }
+        self.status = PaymentStatus::Declined;
+        Ok(PaymentFailedEvent {
+            payment_id: self.id,
+            order_id: self.order_id,
             amount: self.amount,
+            error_code: "AUTHORIZATION_DECLINED".to_string(),
+            reason,
             occurred_at: Utc::now(),
         })
     }
