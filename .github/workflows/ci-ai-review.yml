@@ -98,7 +98,7 @@ jobs:
             ROLE="架构与契约审查员"
           else
             SKILL_FILE=".agents/skills/code-reviewer/SKILL.md"
-            ROLE="业务切片代码审查员"
+            ROLE="Feature 代码审查员"
           fi
 
           CONTINUE_FLAG=""

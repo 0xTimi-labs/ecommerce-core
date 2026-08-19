@@ -75,6 +75,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@f548e57e544e1ff5a4c46bf1e1b8685f8e4a348a # Node 24
 
+      - name: Setup Buf CLI
+        uses: bufbuild/buf-setup-action@fbb91772b52752bd36ca8552d2ff4b94e111f24f
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate Code from Protobuf Contracts
+        run: |
+          if find contracts/proto -name '*.proto' 2>/dev/null | grep -q .; then
+            buf generate
+          fi
+
       - name: Install Rust Stable
         uses: dtolnay/rust-toolchain@6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772
         with:
@@ -115,6 +126,17 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@f548e57e544e1ff5a4c46bf1e1b8685f8e4a348a # Node 24
+
+      - name: Setup Buf CLI
+        uses: bufbuild/buf-setup-action@fbb91772b52752bd36ca8552d2ff4b94e111f24f
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate Code from Protobuf Contracts
+        run: |
+          if find contracts/proto -name '*.proto' 2>/dev/null | grep -q .; then
+            buf generate
+          fi
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6

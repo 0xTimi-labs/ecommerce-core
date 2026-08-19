@@ -1,0 +1,28 @@
+name: 需求建议
+description: 提出新的业务功能建议或系统改进想法
+title: "[Feature Request]: "
+labels: ["type/feature-request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 需求建议
+        欢迎提出您对产品功能或系统体验的改进构想。
+
+  - type: textarea
+    id: problem_statement
+    attributes:
+      label: 业务背景与痛点
+      description: 遇到了什么业务诉求或痛点？
+      placeholder: 在...场景下，由于缺少...导致...
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed_solution
+    attributes:
+      label: 建议方案或期望效果
+      description: 期望系统如何实现或提供什么能力？
+      placeholder: 建议提供...功能，实现...效果...
+    validations:
+      required: true
