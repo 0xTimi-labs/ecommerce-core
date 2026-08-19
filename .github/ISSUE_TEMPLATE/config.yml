@@ -1,5 +1,5 @@
 blank_issues_enabled: false
 contact_links:
-  - name: 架构与设计治理文档
-    url: https://github.com/0xTimi2233/ecommerce-core/tree/main/docs
-    about: 查看领域愿景、上下文地图与 ADR 架构决策记录
+  - name: "架构与设计治理文档"
+    url: "https://github.com/0xTimi2233/ecommerce-core/tree/main/docs"
+    about: "查看领域愿景、上下文地图与 ADR 架构决策记录"
