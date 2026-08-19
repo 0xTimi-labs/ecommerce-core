@@ -25,7 +25,8 @@ jobs:
        github.event.pull_request.draft == false &&
        (github.event.action == 'opened' ||
         github.event.action == 'ready_for_review' ||
-        (github.event.action == 'labeled' && github.event.label.name == 'review/ready') ||
+        (github.event.action == 'labeled' && (github.event.label.name == 'review/in-progress' || github.event.label.name == 'review/ready')) ||
+        contains(github.event.pull_request.labels.*.name, 'review/in-progress') ||
         contains(github.event.pull_request.labels.*.name, 'review/ready'))) ||
       (github.event_name == 'issue_comment' &&
        github.event.issue.pull_request != null &&

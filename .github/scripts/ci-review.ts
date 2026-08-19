@@ -48,7 +48,7 @@ export function transition(
     case 'START_REVIEW':
       return {
         nextState: ReviewState.REVIEWING,
-        labelsToAdd: ['review/ready'],
+        labelsToAdd: ['review/in-progress'],
         labelsToRemove: ['review/approved', 'review/changes-requested'],
       };
 
@@ -59,14 +59,14 @@ export function transition(
         return {
           nextState: ReviewState.CHANGES_REQUESTED,
           labelsToAdd: [],
-          labelsToRemove: ['review/ready', 'review/approved'],
+          labelsToRemove: ['review/in-progress', 'review/approved'],
         };
       }
 
       return {
         nextState: ReviewState.APPROVED,
         labelsToAdd: ['review/approved'],
-        labelsToRemove: ['review/ready', 'review/changes-requested'],
+        labelsToRemove: ['review/in-progress', 'review/changes-requested'],
       };
     }
   }
@@ -165,7 +165,7 @@ export async function runReview() {
     : '.agents/skills/code-reviewer/SKILL.md';
   const role = isArchitecturePr ? '架构与契约审查员' : 'Feature 代码审查员';
 
-  // 2. 状态机：进入 REVIEWING 状态并清理旧结果标
+  // 2. 状态机：进入 REVIEWING 状态，打上 review/in-progress 并清理旧终态标
   let state = ReviewState.IDLE;
   const startTransition = transition(state, { type: 'START_REVIEW' });
   state = startTransition.nextState;
@@ -222,7 +222,7 @@ export async function runReview() {
     console.warn(`[CI Review] Pi CLI exited with code ${piProc.exitCode}`);
   }
 
-  // 7. 终态收敛：检测 AI 结果标签，状态机流转并自动清理 review/ready
+  // 7. 终态收敛：检测 AI 结果标签，状态机流转并自动清理 review/in-progress
   const postReviewLabels = GitHubClient.getPrLabels(prNumber);
   console.log(`[CI Review] Post-review labels: ${JSON.stringify(postReviewLabels)}`);
 
