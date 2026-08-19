@@ -7,6 +7,7 @@ description: 审查业务切片代码 PR；当切片开发完成、提交代码�
 
 ## 审查原则
 
+- **全量单次扫描**：单次运行必须完整扫描全部轴线并一次性输出所有问题，严禁分批次提出新问题
 - **切片自包含**：仅核验关联 Issue 范围内的单一用例，改动保持最小必要
 - **双层 TDD**：业务行为通过黑盒场景与白盒单元测试双层验证
 
@@ -15,7 +16,7 @@ description: 审查业务切片代码 PR；当切片开发完成、提交代码�
 ### 1. 规格与需求轴
 - 需求完备性：核对正向与异常分支行为是否完全实现
 - 契约与切片边界：核验未变动公共契约 `contracts/`，仅修改当前切片允许的文件，仅解锁关联 Issue 指定的单一场景
-- 每条发现必须精准引用 Issue 或 `.feature` 原文行号
+- 每条发现必须精准引用关联 Issue 或对应 Scenario 名称
 
 ### 2. 架构与规范轴
 - **领域纯度**：`domain/` 聚合根仅包含业务逻辑与状态机，外部交互一律通过 `ports/` 接口抽象，适配器与外部客户端仅存在于外层
@@ -36,10 +37,10 @@ description: 审查业务切片代码 PR；当切片开发完成、提交代码�
 
 ## 规格与需求轴
 - [P0/P1/P2] <问题描述>
-  - 引据: Issue #<ID> 或 `<feature_path>#L<line>`: "<引用原文>"
+  - 引据: Issue #<ID> 或 `<feature_path>` 中的 Scenario: "<Scenario 名称>"
 
 ## 架构与规范轴
-- [P0/P1/P2] `<file_path>#L<line>`: <问题描述> (规则出处: docs/architecture/ARCHITECTURE.md 或规范名)
+- [P0/P1/P2] `<file_path>` (<symbol_name>): <问题描述> (规则出处: docs/architecture/ARCHITECTURE.md 或规范名)
 
 ## 判定
 - 结果: APPROVED / REQUEST_CHANGES (存在 P0 时为 REQUEST_CHANGES)
