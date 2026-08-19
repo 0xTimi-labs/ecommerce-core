@@ -19,8 +19,7 @@ jobs:
       (github.event_name == 'pull_request' && github.event.pull_request.draft == false) ||
       (github.event_name == 'issue_comment' && github.event.issue.pull_request != null &&
        (contains(github.event.comment.body, '<!-- agent-review: request -->') ||
-        contains(github.event.comment.body, '<!-- agent-review: continue -->') ||
-        startsWith(github.event.comment.body, '/review')) &&
+        contains(github.event.comment.body, '<!-- agent-review: continue -->')) &&
        (github.event.comment.author_association == 'OWNER' ||
         github.event.comment.author_association == 'MEMBER' ||
         github.event.comment.author_association == 'COLLABORATOR'))
@@ -94,22 +93,24 @@ jobs:
             ROLE="业务切片代码审查员"
           fi
 
-          # 2. 判断会话模式：首次审查 vs 继承会话复核
+          # 2. 判断会话模式：首次审查 vs 继承会话复核 vs 评论触发全新/降级审查
           CONTINUE_FLAG=""
           IS_CONTINUE=false
 
-          if [ "$EVENT_NAME" = "issue_comment" ]; then
-            if [[ "$COMMENT_BODY" == *"<!-- agent-review: continue -->"* ]] || [[ "$COMMENT_BODY" =~ ^/review[[:space:]]+(-c|--continue) ]]; then
-              IS_CONTINUE=true
-            fi
+          if [ "$EVENT_NAME" = "issue_comment" ] && [[ "$COMMENT_BODY" == *"<!-- agent-review: continue -->"* ]]; then
+            IS_CONTINUE=true
           fi
 
           if [ "$IS_CONTINUE" = true ] && [ -d ".pi_session" ] && [ -n "$(ls -A .pi_session 2>/dev/null)" ]; then
             CONTINUE_FLAG="-c"
-            PROMPT="开发者已更新代码并请求复核。请在当前会话中复核最新代码与反馈，依照 $SKILL_FILE 完成收敛判定。"
+            PROMPT="开发者已更新代码并请求复核。请在当前会话中复核最新代码与开发者反馈，依照 $SKILL_FILE 完成收敛判定。"
           else
             rm -rf .pi_session && mkdir -p .pi_session
-            PROMPT="你是 $ROLE。当前正在开展 PR #${PR_NUMBER} 的审查。请全面扫描当前变更，依照 $SKILL_FILE 输出审查报告。"
+            if [ "$EVENT_NAME" = "issue_comment" ]; then
+              PROMPT="你是 $ROLE。当前正在开展 PR #${PR_NUMBER} 的审查。请结合 PR 历史评论记录全面审查当前变更，重点确认前序问题是否已妥善解决，禁止横向发散新问题，依照 $SKILL_FILE 输出审查报告。"
+            else
+              PROMPT="你是 $ROLE。当前正在开展 PR #${PR_NUMBER} 的全量初审。请全面扫描当前架构与契约变更，依照 $SKILL_FILE 输出审查报告。"
+            fi
           fi
 
           # 3. 运行 Pi（启用 RTK 代理环境与 Max 思考等级）
