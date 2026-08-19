@@ -3,6 +3,9 @@
   "vcs": {
     "enabled": false
   },
+  "files": {
+    "includes": ["**", "!src/generated", "!node_modules"]
+  },
   "formatter": {
     "enabled": true,
     "indentStyle": "space",

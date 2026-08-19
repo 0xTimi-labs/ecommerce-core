@@ -27,10 +27,10 @@ for (const file of fixtureFiles) {
     throw new Error(`fixture 名称不符合约定：${file}`);
   }
   const [, stem, expected] = matched;
-  const schemaId = `https://ecommerce-core-reference.local/events/${stem}.schema.json`;
+  const schemaId = `https://ecommerce-core.local/events/${stem}.schema.json`;
   const validate = ajv.getSchema(schemaId);
   if (!validate) {
-    throw new Error(`fixture 缺少声明 schema：${file}`);
+    throw new Error(`fixture 缺少声明 schema：${file} (schemaId: ${schemaId})`);
   }
   const actual = validate(await Bun.file(path.join(fixturesDir, file)).json());
   if (actual !== (expected === "valid")) {
@@ -38,9 +38,16 @@ for (const file of fixtureFiles) {
     console.error(
       `${file}: 期望 ${expected}，实际 ${actual ? "valid" : "invalid"}`,
     );
+    if (validate.errors) {
+      console.error(JSON.stringify(validate.errors, null, 2));
+    }
   }
 }
 
 if (failures > 0) {
   process.exitCode = 1;
+} else {
+  console.log(
+    `✅ 成功校验全部 ${schemaFiles.length} 个 Event Schema 及 ${fixtureFiles.length} 个测试用例！`,
+  );
 }
