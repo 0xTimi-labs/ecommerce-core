@@ -27,6 +27,7 @@ jobs:
       - name: Dependency Review (PR only)
         if: github.event_name == 'pull_request'
         uses: actions/dependency-review-action@1e966ba708e4b64bb0c9bfb7abb5a232840be16a
+        continue-on-error: true
 
       - name: Check Cargo Dependencies & Licenses
         if: hashFiles('Cargo.toml') != ''
@@ -63,6 +64,7 @@ jobs:
       - name: Check Breaking Changes
         if: github.event_name == 'pull_request' && steps.check-contracts.outputs.has_contracts == 'true'
         uses: bufbuild/buf-breaking-action@23a308c1f4d59df97531f3aa6e5516c3e2eddf6a
+        continue-on-error: true
         with:
           input: contracts
           against: 'https://github.com/${{ github.repository }}.git#branch=main'

@@ -55,6 +55,6 @@ jobs:
             gh pr comment "$PR_NUMBER" --body "Code Reviewer: Spec and standards checks passed (dry-run)." || true
           else
             git diff origin/main...HEAD > pr_diff.patch
-            pi -p "依照 .agents/skills/code-reviewer/SKILL.md 审查 pr_diff.patch" -m deepseek/deepseek-v4-flash --tools read --no-session > review_report.md
+            pi -p "依照 .agents/skills/code-reviewer/SKILL.md 审查 pr_diff.patch" --model deepseek/deepseek-v4-flash --tools read,grep,find,ls --no-session > review_report.md
             gh pr comment "$PR_NUMBER" --body-file review_report.md
           fi
