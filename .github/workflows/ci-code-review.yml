@@ -4,9 +4,11 @@ on:
   pull_request:
     types: [opened, synchronize, ready_for_review]
     branches: [main]
+  issue_comment:
+    types: [created]
 
 concurrency:
-  group: code-review-${{ github.ref }}
+  group: code-review-${{ github.event.pull_request.number || github.event.issue.number }}
   cancel-in-progress: true
 
 permissions:
@@ -16,7 +18,10 @@ permissions:
 jobs:
   code-review:
     name: Code & Slice Review (Dual-Axis)
-    if: github.event.pull_request.draft == false && !startsWith(github.head_ref, 'feat/artifact-')
+    if: |
+      (github.event_name == 'pull_request' && github.event.pull_request.draft == false && !startsWith(github.head_ref, 'feat/artifact-')) ||
+      (github.event_name == 'issue_comment' && github.event.issue.pull_request && startsWith(github.event.comment.body, '/review') &&
+       (github.event.comment.author_association == 'OWNER' || github.event.comment.author_association == 'MEMBER' || github.event.comment.author_association == 'COLLABORATOR'))
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -29,6 +34,14 @@ jobs:
 
       - name: Install Pi CLI
         run: bun add -g --ignore-scripts @earendil-works/pi-coding-agent
+
+      - name: Restore Session Cache
+        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.1.1
+        with:
+          path: .pi_session
+          key: pi-session-code-${{ github.event.pull_request.number || github.event.issue.number }}-${{ github.run_id }}
+          restore-keys: |
+            pi-session-code-${{ github.event.pull_request.number || github.event.issue.number }}-
 
       - name: Configure Pi Auth
         if: env.DEEPSEEK_API_KEY != ''
@@ -49,13 +62,22 @@ jobs:
         env:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_NUMBER: ${{ github.event.pull_request.number || github.event.issue.number }}
+          PR_TITLE: ${{ github.event.pull_request.title || github.event.issue.title }}
         run: |
           if [ -z "$DEEPSEEK_API_KEY" ]; then
             echo "DEEPSEEK_API_KEY not configured. Running dry-run check..."
             gh pr comment "$PR_NUMBER" --body "Code Reviewer: Spec and standards checks passed (dry-run)." || true
           else
-            git diff origin/main...HEAD > pr_diff.patch
-            pi -p "依照 .agents/skills/code-reviewer/SKILL.md 审查 pr_diff.patch" --model deepseek/deepseek-v4-flash --tools read,grep,find,ls --no-session > review_report.md
+            if [ ! -d ".pi_session" ] || [ -z "$(ls -A .pi_session 2>/dev/null)" ]; then
+              pi -p "你是业务切片代码审查员。当前正在开展 PR #${PR_NUMBER}（${PR_TITLE}）的首次审查。请全面扫描当前切片实现与测试，依照 .agents/skills/code-reviewer/SKILL.md 输出审查报告。" \
+                 --session-dir .pi_session \
+                 --model deepseek/deepseek-v4-flash > review_report.md
+            else
+              pi -p "收到最新更新。请在当前会话中复核最新代码变更与开发者反馈，重点核实上一轮指出的问题是否已妥善解决，依照 .agents/skills/code-reviewer/SKILL.md 完成收敛判定。" \
+                 --session-dir .pi_session \
+                 -c \
+                 --model deepseek/deepseek-v4-flash > review_report.md
+            fi
             gh pr comment "$PR_NUMBER" --body-file review_report.md
           fi
