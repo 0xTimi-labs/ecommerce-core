@@ -56,6 +56,7 @@ jobs:
             echo "DEEPSEEK_API_KEY not configured. Running dry-run check..."
             gh pr comment "$PR_NUMBER" --body "Artifact Reviewer: Architecture and contract checks passed (dry-run)." || true
           else
-            pi -p "你是架构与契约审查员。当前正在审查 PR #${PR_NUMBER}（${PR_TITLE}）。请对比 origin/main 检索当前 PR 变更，依照 .agents/skills/artifact-reviewer/SKILL.md 展开审查。" --model deepseek/deepseek-v4-flash --no-session > review_report.md
+            gh pr view "$PR_NUMBER" --comments > pr_conversation_history.txt 2>/dev/null || true
+            pi -p "你是架构与契约审查员。当前正在审查 PR #${PR_NUMBER}（${PR_TITLE}）。请对比 origin/main 检索当前 PR 变更，并参考 pr_conversation_history.txt 中的前序审查记录。重点核验前序问题是否已修复，依照 .agents/skills/artifact-reviewer/SKILL.md 展开审查，严禁无故发散新问题。" --model deepseek/deepseek-v4-flash --no-session > review_report.md
             gh pr comment "$PR_NUMBER" --body-file review_report.md
           fi
