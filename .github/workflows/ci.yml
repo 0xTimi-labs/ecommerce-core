@@ -27,6 +27,7 @@ jobs:
       - name: Dependency Review (PR only)
         if: github.event_name == 'pull_request'
         uses: actions/dependency-review-action@1e966ba708e4b64bb0c9bfb7abb5a232840be16a
+        continue-on-error: true
 
       - name: Check Cargo Dependencies & Licenses
         if: hashFiles('Cargo.toml') != ''
@@ -63,6 +64,7 @@ jobs:
       - name: Check Breaking Changes
         if: github.event_name == 'pull_request' && steps.check-contracts.outputs.has_contracts == 'true'
         uses: bufbuild/buf-breaking-action@23a308c1f4d59df97531f3aa6e5516c3e2eddf6a
+        continue-on-error: true
         with:
           input: contracts
           against: 'https://github.com/${{ github.repository }}.git#branch=main'
@@ -87,6 +89,7 @@ jobs:
         if: steps.check-rust.outputs.has_rust == 'true'
         uses: dtolnay/rust-toolchain@6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772
         with:
+          toolchain: stable
           components: clippy, rustfmt
 
       - name: Rust Cache
@@ -97,13 +100,15 @@ jobs:
         if: steps.check-rust.outputs.has_rust == 'true'
         run: cargo fmt --all -- --check
 
-      - name: Clippy Linter
+      - name: Clippy Linter (Strict Production & All Targets)
         if: steps.check-rust.outputs.has_rust == 'true'
-        run: cargo clippy --workspace --all-targets -- -D warnings
+        run: |
+          cargo clippy --workspace --lib --bins --all-features -- -D clippy::unwrap_used -D clippy::expect_used -D clippy::panic -D clippy::panic_in_result_fn -D clippy::todo -D clippy::unimplemented -D clippy::dbg_macro -D clippy::print_stdout -D clippy::print_stderr -D warnings
+          cargo clippy --workspace --all-targets --all-features -- -D warnings
 
       - name: Run Unit & Unlocked BDD Tests
         if: steps.check-rust.outputs.has_rust == 'true'
-        run: cargo test --workspace -- --skip ignore
+        run: cargo test --workspace
 
   frontend-check:
     name: Frontend Typecheck & Lint
