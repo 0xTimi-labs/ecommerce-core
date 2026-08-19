@@ -1,4 +1,4 @@
-#{issue_id}
+Fixes #{issue_id}
 
 ## 变更说明
 
