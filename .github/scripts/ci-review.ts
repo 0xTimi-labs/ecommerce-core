@@ -48,7 +48,7 @@ export function transition(
     case 'START_REVIEW':
       return {
         nextState: ReviewState.REVIEWING,
-        labelsToAdd: [],
+        labelsToAdd: ['review/ready'],
         labelsToRemove: ['review/approved', 'review/changes-requested'],
       };
 
