@@ -1,0 +1,6 @@
+version: v1
+plugins:
+  - plugin: prost
+    out: crates/ordering/src/contracts/gen
+  - plugin: es
+    out: apps/web/src/contracts/gen

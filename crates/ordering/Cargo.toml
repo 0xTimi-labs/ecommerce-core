@@ -1,0 +1,26 @@
+[package]
+name = "ordering"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+shared-kernel = { path = "../shared-kernel" }
+ordering-api = { path = "../ordering-api" }
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+async-trait.workspace = true
+uuid.workspace = true
+chrono.workspace = true
+tokio.workspace = true
+
+[dev-dependencies]
+cucumber.workspace = true
+
+[[test]]
+name = "acceptance"
+harness = false
+
+[lints]
+workspace = true
