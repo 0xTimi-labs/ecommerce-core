@@ -55,7 +55,7 @@ jobs:
           rtk init --agent pi --global
 
       - name: Restore Session Cache
-        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf # v4.2.2
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: .pi_session
           key: pi-session-${{ github.event.pull_request.number || github.event.issue.number }}-${{ github.run_id }}
