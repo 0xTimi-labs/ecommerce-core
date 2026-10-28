@@ -33,7 +33,7 @@ jobs:
 
       - name: Rust Cache
         if: steps.check-rust.outputs.has_rust == 'true'
-        uses: Swatinem/rust-cache@f0d9c3887740aee45f6153b24b3a6b815192ec16 # v2.7.7
+        uses: Swatinem/rust-cache@c8037a86dde8214a8310e9f54a8fc61ab362aa31 # v2.7.7
 
       - name: Full Workspace Build & Clippy (Strict Production & All Targets)
         if: steps.check-rust.outputs.has_rust == 'true'
